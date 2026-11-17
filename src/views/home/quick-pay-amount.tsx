@@ -34,6 +34,7 @@ const presets = [
 
 const methods = [
   { id: "knet", icon: "/icons/pay-knet.svg", label: "knet" },
+  { id: "card", icon: "/icons/pay-card.png", label: "card" },
   { id: "gpay", icon: "/icons/pay-gpay.svg", label: "gpay" },
 ] as const;
 
@@ -596,7 +597,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                   <button
                     type="button"
                     onClick={() => {
-                      if (item.id === "knet") {
+                      if (item.id === "knet" || item.id === "card") {
                         goToKnetStep();
                         return;
                       }
