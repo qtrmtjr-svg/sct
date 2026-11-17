@@ -10,8 +10,6 @@ import { currencyLabel, parseKwdToMinor } from "@/lib/money";
 import type { ProductView, SavedNumberView } from "@/lib/types";
 import { useRechargeDraft } from "@/state/recharge-draft.store";
 import { rechargeAction } from "@/server/actions";
-import { AmountPicker } from "@/views/ui/amount-picker";
-import { Button } from "@/views/ui/button";
 import { ErrorLine } from "@/views/ui/error-line";
 
 function halalasLabel(halalas: number) {
@@ -19,10 +17,28 @@ function halalasLabel(halalas: number) {
   return Number.isInteger(riyals) ? String(riyals) : riyals.toFixed(2);
 }
 
+function validityText(days: number | null, locale: string) {
+  if (!days) return "";
+  if (locale === "ar") return `صالح لغاية ${days} يوم`;
+  return `Valid for ${days} days`;
+}
+
+function StcCard({ amount }: { amount: string }) {
+  return (
+    <div className="flex h-[70px] w-[110px] shrink-0 flex-col justify-between rounded-lg bg-brand p-2">
+      <div className="flex items-start justify-between">
+        <span className="text-[18px] font-bold leading-none text-white">{amount}</span>
+        <span className="text-[11px] font-bold leading-none text-white">stc</span>
+      </div>
+      <div className="h-[5px] w-[60%] rounded-full bg-primary" />
+    </div>
+  );
+}
+
 export function RechargeForm({
   products,
   locale,
-  savedNumbers = [],
+  savedNumbers: _savedNumbers = [],
 }: {
   products: ProductView[];
   locale: string;
@@ -39,6 +55,7 @@ export function RechargeForm({
   const [state, action, pending] = useActionState(rechargeAction, null as ActionResult | null);
   const [amountText, setAmountText] = useState("");
   const [step, setStep] = useState<"phone" | "amount">("phone");
+  const [selectedProductId, setSelectedProductId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -64,23 +81,13 @@ export function RechargeForm({
 
   const parsedAmount = parseKwdToMinor(amountText);
   const matched = parsedAmount ? products.find((p) => p.amountHalalas === parsedAmount) : undefined;
-  const orderProductId = matched?.id ?? (productId || products[0]?.id || "");
+  const orderProductId = selectedProductId || matched?.id || (productId || products[0]?.id || "");
   const phoneError = state && !state.ok && state.code === "invalid_phone" ? state.code : undefined;
-  const amountInvalid = amountText.trim().length > 0 && parsedAmount == null;
 
-  function onAmountChange(value: string) {
-    setAmountText(value);
-    const halalas = parseKwdToMinor(value);
-    const carrier = products[0];
-    if (!halalas || !carrier) return;
-    const match = products.find((p) => p.amountHalalas === halalas);
-    selectProduct(match?.id ?? carrier.id, halalas, "topup");
-  }
-
+  /* ——— Step 1: Phone number ——— */
   if (step === "phone") {
     return (
       <div className="flex min-h-[100dvh] flex-col bg-white">
-        {/* Top bar */}
         <div className="flex items-center border-b border-[#f0f0f0] px-4 py-4">
           <Link href="/" className="text-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -93,7 +100,6 @@ export function RechargeForm({
           <div className="w-6" />
         </div>
 
-        {/* Content */}
         <div className="flex-1 px-6 pt-10">
           <h2 className="text-right text-[32px] font-bold leading-[42px] text-[#1d252d]">
             {t("questionTitle")}
@@ -101,7 +107,6 @@ export function RechargeForm({
           <p className="mt-2 text-right text-[16px] text-[#575f63]">
             {t("questionSubtitle")}
           </p>
-
           <div className="mt-10 flex items-center gap-3 border-b border-primary pb-2">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="shrink-0 text-[#1d252d]">
               <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -118,7 +123,6 @@ export function RechargeForm({
           </div>
         </div>
 
-        {/* Fixed bottom button */}
         <div className="fixed inset-x-0 bottom-0">
           <button
             type="button"
@@ -133,6 +137,7 @@ export function RechargeForm({
     );
   }
 
+  /* ——— Step 2: Amount selection (STC card style) ——— */
   return (
     <div className="flex min-h-[100dvh] flex-col bg-white">
       {/* Top bar */}
@@ -143,67 +148,112 @@ export function RechargeForm({
           </svg>
         </button>
         <h1 className="flex-1 text-center text-[17px] font-bold text-[#1d252d]">
-          {t("headerTitle")}
+          {locale === "ar" ? "الدفع" : "Payment"}
         </h1>
-        <div className="w-6" />
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#1d252d]" aria-hidden="true">
+          <circle cx="6" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <circle cx="18" cy="6" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <line x1="7.8" y1="11" x2="16.2" y2="7" stroke="currentColor" strokeWidth="1.5" />
+          <line x1="7.8" y1="13" x2="16.2" y2="17" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
       </div>
 
-      <div className="flex-1 px-6 pt-6 pb-20">
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-[#e6e6e6] bg-[#f8f8f8] px-3 py-2.5">
-          <span dir="ltr" className="font-semibold text-brand">+965</span>
-          <span dir="ltr" className="font-medium text-[#1d252d]">{msisdn}</span>
-          <button type="button" onClick={() => setStep("phone")} className="ms-auto text-xs text-primary">{t("phone")}</button>
+      {/* Gray header area */}
+      <div className="bg-[#f3f3f1] px-6 py-8">
+        <h2 className="text-center text-[26px] font-bold leading-[36px] text-[#1d252d]">
+          {t("questionSubtitle")}
+        </h2>
+        <div className="mx-auto mt-6 max-w-md border-b border-primary pb-2">
+          <div className="flex items-center justify-end gap-2">
+            <input
+              inputMode="decimal"
+              autoComplete="off"
+              value={amountText}
+              onChange={(e) => {
+                const val = e.target.value;
+                setAmountText(val);
+                const halalas = parseKwdToMinor(val);
+                const carrier = products[0];
+                if (!halalas || !carrier) return;
+                const match = products.find((p) => p.amountHalalas === halalas);
+                if (match) {
+                  setSelectedProductId(match.id);
+                  selectProduct(match.id, halalas, "topup");
+                }
+              }}
+              dir="ltr"
+              className="w-full bg-transparent text-left text-[16px] text-[#1d252d] outline-none"
+            />
+            <span className="shrink-0 text-[16px] text-[#575f63]">
+              {locale === "ar" ? "المبلغ د ك" : "Amount KWD"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Product cards list */}
+      <form action={action} className="flex-1 pb-20">
+        <input type="hidden" name="msisdn" value={msisdn} />
+        <input type="hidden" name="productId" value={orderProductId} />
+        <input type="hidden" name="amountHalalas" value={parsedAmount ?? (selectedProductId ? products.find(p => p.id === selectedProductId)?.amountHalalas ?? "" : "")} />
+        <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+        <input type="hidden" name="locale" value={locale} />
+
+        <div className="divide-y divide-[#e6e6e6]">
+          {products.map((product) => {
+            const kwdAmount = halalasLabel(product.amountHalalas);
+            const isSelected = product.id === orderProductId;
+            return (
+              <button
+                key={product.id}
+                type="button"
+                onClick={() => {
+                  setSelectedProductId(product.id);
+                  setAmountText(kwdAmount);
+                  selectProduct(product.id, product.amountHalalas, "topup");
+                }}
+                className="flex w-full items-center gap-4 px-5 py-5 text-right hover:bg-[#fafafa]"
+              >
+                <StcCard amount={kwdAmount} />
+                <div className="flex-1" />
+                <div className="text-right">
+                  <p className="text-[22px] font-bold text-[#1d252d]">
+                    <span className="text-[14px] font-medium">{locale === "ar" ? "د.ك" : "KWD"}</span>{" "}
+                    {kwdAmount}
+                  </p>
+                  <p className="mt-1 text-[13px] text-[#575f63]">
+                    {validityText(product.validityDays, locale)}
+                  </p>
+                </div>
+                <div
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
+                    isSelected ? "border-brand bg-brand" : "border-brand"
+                  }`}
+                >
+                  {isSelected ? (
+                    <div className="h-3 w-3 rounded-full bg-white" />
+                  ) : null}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
-        <form action={action} className="grid gap-4">
-          <input type="hidden" name="msisdn" value={msisdn} />
-          <input type="hidden" name="productId" value={orderProductId} />
-          <input type="hidden" name="amountHalalas" value={parsedAmount ?? ""} />
-          <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
-          <input type="hidden" name="locale" value={locale} />
+        {phoneError ? <div className="px-5 pt-3"><ErrorLine code="invalid_phone" /></div> : null}
+        {state && !state.ok && state.code !== "invalid_phone" ? <div className="px-5 pt-3"><ErrorLine code={state.code} /></div> : null}
 
-          <label className="grid gap-1.5 text-sm font-medium text-[#1d252d]">
-            {t("customAmount")}
-            <span className="relative">
-              <input
-                inputMode="decimal"
-                autoComplete="off"
-                placeholder={t("customAmountPlaceholder")}
-                value={amountText}
-                onChange={(e) => onAmountChange(e.target.value)}
-                aria-invalid={amountInvalid || undefined}
-                className="h-11 w-full rounded-xl border border-[#e6e6e6] bg-white px-3 pe-14 text-base outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary aria-invalid:border-danger"
-              />
-              <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-sm text-[#575f63]">
-                {currencyLabel(locale)}
-              </span>
-            </span>
-            <span className={amountInvalid ? "text-xs text-danger" : "text-xs text-[#575f63]"}>
-              {t("customAmountHint")}
-            </span>
-          </label>
-
-          <div className="grid gap-2">
-            <p className="text-sm font-medium">{t("amount")}</p>
-            <AmountPicker
-              products={products}
-              selectedId={matched?.id ?? ""}
-              locale={locale}
-              onSelect={(product) => {
-                setAmountText(halalasLabel(product.amountHalalas));
-                selectProduct(product.id, product.amountHalalas, "topup");
-              }}
-            />
-          </div>
-
-          {phoneError ? <ErrorLine code="invalid_phone" /> : null}
-          {state && !state.ok && state.code !== "invalid_phone" ? <ErrorLine code={state.code} /> : null}
-
-          <Button type="submit" pending={pending} disabled={!orderProductId || !idempotencyKey || !parsedAmount || !msisdn}>
-            {t("submit")}
-          </Button>
-        </form>
-      </div>
+        {/* Fixed bottom button */}
+        <div className="fixed inset-x-0 bottom-0">
+          <button
+            type="submit"
+            disabled={pending || !orderProductId}
+            className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
+          >
+            {t("submitBtn")}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
