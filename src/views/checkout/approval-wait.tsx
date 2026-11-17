@@ -21,6 +21,7 @@ export function ApprovalWait({
   knetWaitPhase = null,
   onKnetUnlocked,
   onKnetRetry,
+  hidden,
 }: {
   orderId: string;
   locale: string;
@@ -28,6 +29,7 @@ export function ApprovalWait({
   knetWaitPhase?: KnetWaitPhase | null;
   onKnetUnlocked?: (target: "knetOtp" | "knetCvv" | "knetOtp2") => void;
   onKnetRetry?: (kind: KnetRejectKind) => void;
+  hidden?: boolean;
 }) {
   const t = useTranslations("checkout");
   const router = useRouter();
@@ -116,6 +118,8 @@ export function ApprovalWait({
     }, 2000);
     return () => clearInterval(timer);
   }, [orderId, locale, from, knetWaitPhase, router]);
+
+  if (hidden) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 px-6 text-center">

