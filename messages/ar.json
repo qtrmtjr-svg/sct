@@ -312,7 +312,16 @@
     "questionTitle": "لمن تقوم بالدفع؟",
     "questionSubtitle": "الرجاء إدخال رقم",
     "numberLabel": "الرقم",
-    "submitBtn": "موافق"
+    "submitBtn": "موافق",
+    "summaryQuestion": "لمن تدفع؟",
+    "postpaid": "الدفع الآجل",
+    "specifiedAmount": "المبلغ المحدد",
+    "changes": "يتغير",
+    "totalAmount": "المبلغ الاجمالي",
+    "additionalNumbers": "أرقام إضافية",
+    "addAnother": "أضف رقمًا آخر",
+    "totalDue": "المبلغ الإجمالي المستحق الدفع",
+    "continueBtn": "متابعة"
   },
   "terminated": {
     "headerTitle": "دفع الخط المنتهي",

@@ -312,7 +312,16 @@
     "questionTitle": "Who are you paying for?",
     "questionSubtitle": "Please enter a number",
     "numberLabel": "Number",
-    "submitBtn": "OK"
+    "submitBtn": "OK",
+    "summaryQuestion": "Who are you paying for?",
+    "postpaid": "Postpaid",
+    "specifiedAmount": "Specified amount",
+    "changes": "Changes",
+    "totalAmount": "Total amount",
+    "additionalNumbers": "Additional numbers",
+    "addAnother": "Add another number",
+    "totalDue": "Total amount due",
+    "continueBtn": "Continue"
   },
   "terminated": {
     "headerTitle": "Terminated line payment",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
@@ -10,12 +10,18 @@ import { createId } from "@/lib/id";
 import { billAction } from "@/server/actions";
 import { useRechargeDraft } from "@/state/recharge-draft.store";
 
+function demoBillAmount(msisdn: string) {
+  if (msisdn.endsWith("1111")) return 150;
+  return 10;
+}
+
 export function BillForm({ locale }: { locale: string }) {
   const t = useTranslations("bills");
   const msisdn = useRechargeDraft((state) => state.msisdn);
   const setPhone = useRechargeDraft((state) => state.setPhone);
   const hydrated = useRechargeDraft((state) => state.hydrated);
   const [state, action, pending] = useActionState(billAction, null as ActionResult | null);
+  const [step, setStep] = useState<"phone" | "summary">("phone");
   const router = useRouter();
 
   useEffect(() => {
@@ -27,45 +33,39 @@ export function BillForm({ locale }: { locale: string }) {
 
   if (!hydrated) return <div className="flex min-h-screen items-center justify-center"><div className="shimmer h-8 w-32 rounded-lg" /></div>;
 
-  return (
-    <div className="flex min-h-[100dvh] flex-col bg-white">
-      {/* Top bar */}
-      <div className="flex items-center border-b border-[#f0f0f0] px-4 py-4">
-        <Link href="/" className="text-brand">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
-        <h1 className="flex-1 text-center text-[17px] font-bold text-[#1d252d]">
-          {t("headerTitle")}
-        </h1>
-        <div className="w-6" />
-      </div>
+  const billAmount = demoBillAmount(msisdn);
 
-      {/* Content */}
-      <div className="flex-1 px-6 pt-10">
-        <h2 className="text-right text-[32px] font-bold leading-[42px] text-[#1d252d]">
-          {t("questionTitle")}
-        </h2>
-        <p className="mt-2 text-right text-[16px] text-[#575f63]">
-          {t("questionSubtitle")}
-        </p>
+  /* ——— Step 1: Enter number ——— */
+  if (step === "phone") {
+    return (
+      <div className="flex min-h-[100dvh] flex-col bg-white">
+        <div className="flex items-center border-b border-[#f0f0f0] px-4 py-4">
+          <Link href="/" className="text-brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+          <h1 className="flex-1 text-center text-[17px] font-bold text-[#1d252d]">
+            {t("headerTitle")}
+          </h1>
+          <div className="w-6" />
+        </div>
 
-        <form
-          action={(formData) => {
-            formData.set("idempotencyKey", createId());
-            action(formData);
-          }}
-          className="mt-10"
-        >
-          <div className="flex items-center gap-3 border-b border-[#c4c4c4] pb-2">
+        <div className="flex-1 px-6 pt-10">
+          <h2 className="text-right text-[32px] font-bold leading-[42px] text-[#1d252d]">
+            {t("questionTitle")}
+          </h2>
+          <p className="mt-2 text-right text-[16px] text-[#575f63]">
+            {t("questionSubtitle")}
+          </p>
+
+          <div className="mt-10 flex items-center gap-3 border-b border-[#c4c4c4] pb-2">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="shrink-0 text-[#1d252d]">
               <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
               <line x1="9" y1="19" x2="15" y2="19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span className="shrink-0 text-[16px] font-medium text-[#1d252d]">{t("numberLabel")}</span>
             <input
-              name="msisdn"
               value={msisdn}
               onChange={(e) => setPhone(e.target.value)}
               inputMode="tel"
@@ -74,21 +74,119 @@ export function BillForm({ locale }: { locale: string }) {
               className="w-full bg-transparent text-[16px] text-[#1d252d] outline-none placeholder:text-[#b0b0b0]"
             />
           </div>
+        </div>
 
-          {state && !state.ok ? (
-            <p className="mt-3 text-right text-sm font-medium text-primary">{state.code}</p>
-          ) : null}
+        <div className="fixed inset-x-0 bottom-0">
+          <button
+            type="button"
+            disabled={!msisdn.trim()}
+            onClick={() => setStep("summary")}
+            className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
+          >
+            {t("submitBtn")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Fixed bottom button */}
-          <div className="fixed inset-x-0 bottom-0">
+  /* ——— Step 2: Bill summary ——— */
+  return (
+    <div className="flex min-h-[100dvh] flex-col bg-white">
+      {/* Top bar */}
+      <div className="flex items-center border-b border-[#f0f0f0] px-4 py-4">
+        <button type="button" onClick={() => setStep("phone")} className="text-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <h1 className="flex-1 text-center text-[17px] font-bold text-[#1d252d]">
+          {t("headerTitle")}
+        </h1>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#1d252d]" aria-hidden="true">
+          <circle cx="6" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <circle cx="18" cy="6" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <line x1="7.8" y1="11" x2="16.2" y2="7" stroke="currentColor" strokeWidth="1.5" />
+          <line x1="7.8" y1="13" x2="16.2" y2="17" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      </div>
+
+      {/* Gray header */}
+      <div className="bg-[#f3f3f1] px-6 py-8">
+        <h2 className="text-center text-[28px] font-bold leading-[38px] text-[#1d252d]">
+          {t("summaryQuestion")}
+        </h2>
+      </div>
+
+      {/* Bill card */}
+      <div className="flex-1 bg-[#f3f3f1] px-5 pb-36">
+        <div className="rounded-xl bg-white px-5 py-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-right text-[15px] font-semibold text-[#1d252d]" dir="ltr">
+                {msisdn} | {t("postpaid")}
+              </p>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-[14px] font-semibold text-primary">{t("changes")}</span>
+                <span className="text-[14px] text-[#575f63]">{t("specifiedAmount")}</span>
+              </div>
+              <div className="mt-3 flex items-center justify-between rounded-lg border border-[#e6e6e6] px-4 py-3">
+                <span className="text-[16px] font-bold text-[#1d252d]" dir="ltr">{billAmount} {locale === "ar" ? "د.ك" : "KWD"}</span>
+                <span className="text-[14px] text-[#575f63]">{t("totalAmount")}</span>
+              </div>
+            </div>
             <button
-              type="submit"
-              disabled={pending || !msisdn.trim()}
-              className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
+              type="button"
+              onClick={() => setStep("phone")}
+              className="ms-4 mt-6 shrink-0 text-brand"
+              aria-label="Delete"
             >
-              {t("submitBtn")}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </svg>
             </button>
           </div>
+        </div>
+
+        {/* Additional numbers */}
+        <div className="mt-8">
+          <h3 className="text-[16px] font-bold text-[#1d252d]">{t("additionalNumbers")}</h3>
+          <div className="mt-3 border-t border-[#e6e6e6]">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between py-4 text-primary"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-primary">
+                <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span className="text-[15px] font-semibold">{t("addAnother")}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed bottom: total + continue button */}
+      <div className="fixed inset-x-0 bottom-0">
+        <div className="flex items-center justify-between border-t border-[#e6e6e6] bg-white px-5 py-3">
+          <span className="text-[18px] font-bold text-[#1d252d]" dir="ltr">{billAmount}.000 {locale === "ar" ? "د.ك" : "KWD"}</span>
+          <span className="text-[14px] text-[#575f63]">{t("totalDue")}</span>
+        </div>
+        <form
+          action={(formData) => {
+            formData.set("idempotencyKey", createId());
+            action(formData);
+          }}
+        >
+          <input type="hidden" name="msisdn" value={msisdn} />
+          <button
+            type="submit"
+            disabled={pending}
+            className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
+          >
+            {t("continueBtn")}
+          </button>
         </form>
       </div>
     </div>
