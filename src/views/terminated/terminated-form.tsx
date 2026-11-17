@@ -109,8 +109,8 @@ export function TerminatedForm({ locale }: { locale: string }) {
           <div className="fixed inset-x-0 bottom-0">
             <button
               type="submit"
-              disabled={pending}
-              className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:opacity-60"
+              disabled={pending || !idValue.trim()}
+              className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
             >
               {t("submitBtn")}
             </button>

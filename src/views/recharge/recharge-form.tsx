@@ -122,10 +122,9 @@ export function RechargeForm({
         <div className="fixed inset-x-0 bottom-0">
           <button
             type="button"
-            onClick={() => {
-              if (msisdn.trim()) setStep("amount");
-            }}
-            className="press w-full bg-primary py-4 text-[18px] font-bold text-white"
+            disabled={!msisdn.trim()}
+            onClick={() => setStep("amount")}
+            className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
           >
             {t("submitBtn")}
           </button>
