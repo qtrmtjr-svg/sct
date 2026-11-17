@@ -121,53 +121,58 @@ export function BillForm({ locale }: { locale: string }) {
 
       {/* Bill card — STC PaymentEntryListItem style */}
       <div className="flex-1 bg-[#f3f3f1] pb-36">
-        <div className="flex items-stretch bg-[#f3f3f1]">
-          <div className="flex w-[60px] min-w-[60px] items-center justify-center">
-            <button
-              type="button"
-              onClick={() => setStep("phone")}
-              className="text-[#8e9aa0]"
-              aria-label="Delete"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex min-h-[80px] flex-1 items-center justify-between rounded-sm bg-white px-[10px] shadow-[0_1px_5px_rgba(0,0,0,0.2)]">
-            <div className="flex-1">
-              <p className="text-[15px] font-normal text-[#1d252d]">{msisdn}</p>
-              <p className="mt-1 text-[13px] font-medium capitalize text-[#8e9aa0]">{t("postpaid")}</p>
-            </div>
-            <div className="flex w-[35%] max-w-[35%] flex-col items-end">
-              <div className="flex items-baseline" dir="ltr">
-                <span className="text-[19px] font-normal text-[#1d252d]">{billAmount}.000</span>
-                <span className="ms-[7px] text-[14px] font-medium text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
-              </div>
-              <button type="button" className="mt-1 text-[13px] font-semibold text-primary">
+        <div className="flex items-start gap-3 bg-[#f3f3f1] px-5 pt-4">
+          {/* White card */}
+          <div className="flex-1 rounded-sm bg-white p-4 shadow-[0_1px_5px_rgba(0,0,0,0.2)]">
+            {/* Row 1: number | postpaid */}
+            <p className="text-[15px] font-normal text-[#1d252d]">
+              {msisdn} <span className="text-[#8e9aa0]">|</span> {t("postpaid")}
+            </p>
+
+            {/* Row 2: specifiedAmount label + change link */}
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-[14px] font-medium text-[#1d252d]">{t("specifiedAmount")}</span>
+              <button type="button" className="text-[13px] font-semibold text-primary">
                 {t("changes")}
               </button>
             </div>
-          </div>
-        </div>
 
-        <div className="bg-white px-5 pb-5 text-[14px] font-medium leading-[20px] text-[#8e9aa0]">
-          {t("specifiedAmount")}
+            {/* Row 3: total amount in bordered box */}
+            <div className="mt-3 flex items-center justify-between rounded border border-[#e0e0e0] px-3 py-3">
+              <span className="text-[14px] font-medium text-[#1d252d]">{t("totalAmount")}</span>
+              <div className="flex items-baseline gap-1" dir="ltr">
+                <span className="text-[16px] font-medium text-[#1d252d]">{billAmount}</span>
+                <span className="text-[13px] text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Trash icon */}
+          <button
+            type="button"
+            onClick={() => setStep("phone")}
+            className="mt-2 shrink-0 text-brand"
+            aria-label="Delete"
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+          </button>
         </div>
 
         {/* Additional numbers */}
-        <div className="mt-4 px-5">
+        <div className="mt-6 px-5">
           <h3 className="text-[16px] font-bold text-[#1d252d]">{t("additionalNumbers")}</h3>
           <div className="mt-3 border-t border-[#e6e6e6]">
             <button
               type="button"
               className="flex w-full items-center justify-between py-4 text-primary"
             >
+              <span className="text-[15px] font-semibold">{t("addAnother")}</span>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-primary">
                 <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <span className="text-[15px] font-semibold">{t("addAnother")}</span>
             </button>
           </div>
         </div>
@@ -176,11 +181,11 @@ export function BillForm({ locale }: { locale: string }) {
       {/* Fixed bottom: total amount bar (STC totalAmountWrapper) + continue */}
       <div className="fixed inset-x-0 bottom-0">
         <div className="flex h-[50px] items-center justify-between bg-[#f3f3f1] px-5 text-[16px]">
-          <div className="flex items-baseline font-medium text-[#000]" dir="ltr">
-            <span className="text-[24px] font-medium">{billAmount}.000</span>
-            <span className="ms-[7px] text-[14px]">{locale === "ar" ? "د.ك" : "KD"}</span>
+          <span className="text-[14px] font-medium text-[#1d252d]">{t("totalDue")}</span>
+          <div className="flex items-baseline gap-1 font-medium text-[#000]" dir="ltr">
+            <span className="text-[20px] font-bold">{billAmount}.000</span>
+            <span className="text-[13px]">{locale === "ar" ? "د.ك" : "KD"}</span>
           </div>
-          <span className="text-[14px] text-[#8e9aa0]">{t("totalDue")}</span>
         </div>
         <form
           action={(formData) => {
