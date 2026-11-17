@@ -107,6 +107,22 @@ function cleanDates(data: Data): Data {
   return out;
 }
 
+const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+function hydrateDates(row: Data): Data {
+  if (!row || typeof row !== "object") return row;
+  for (const [k, v] of Object.entries(row)) {
+    if (typeof v === "string" && ISO_RE.test(v)) {
+      row[k] = new Date(v);
+    }
+  }
+  return row;
+}
+
+function hydrateRows<T>(rows: T[]): T[] {
+  for (const r of rows) hydrateDates(r as Data);
+  return rows;
+}
+
 function model(table: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const from = (): any => sb.from(table);
@@ -127,7 +143,7 @@ function model(table: string) {
       if (opts?.skip) q = q.range(opts.skip, opts.skip + (opts.take || 100) - 1);
       const { data, error } = await q;
       if (error) throw new Error(`findMany ${table}: ${error.message}`);
-      return data || [];
+      return hydrateRows(data || []);
     },
 
     async findUnique(opts: { where: Where; select?: Record<string, unknown>; include?: Record<string, unknown> }) {
@@ -135,7 +151,7 @@ function model(table: string) {
       q = applyWhere(q, opts.where);
       const { data, error } = await q.maybeSingle();
       if (error) throw new Error(`findUnique ${table}: ${error.message}`);
-      return data;
+      return data ? hydrateDates(data) : null;
     },
 
     async findFirst(opts?: { where?: Where; orderBy?: unknown; select?: Record<string, unknown> }) {
@@ -144,14 +160,14 @@ function model(table: string) {
       q = applyOrderBy(q, opts?.orderBy);
       const { data, error } = await q.limit(1).maybeSingle();
       if (error) throw new Error(`findFirst ${table}: ${error.message}`);
-      return data;
+      return data ? hydrateDates(data) : null;
     },
 
     async create(opts: { data: Data; include?: Record<string, unknown> }) {
       const row = cleanDates({ id: genId(), ...opts.data });
       const { data, error } = await from().insert(row).select().single();
       if (error) throw new Error(`create ${table}: ${error.message}`);
-      return data;
+      return hydrateDates(data);
     },
 
     async update(opts: { where: Where; data: Data }) {
@@ -159,7 +175,7 @@ function model(table: string) {
       q = applyWhere(q, opts.where);
       const { data, error } = await q.select().single();
       if (error) throw new Error(`update ${table}: ${error.message}`);
-      return data;
+      return hydrateDates(data);
     },
 
     async updateMany(opts: { where?: Where; data: Data }) {
