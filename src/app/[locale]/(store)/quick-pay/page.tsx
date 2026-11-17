@@ -10,7 +10,7 @@ export default function QuickPayPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ step?: string }>;
+  searchParams: Promise<{ step?: string; source?: string }>;
 }) {
   return (
     <Suspense fallback={<div className="h-64 animate-pulse bg-white" />}>
@@ -24,10 +24,10 @@ async function Content({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ step?: string }>;
+  searchParams: Promise<{ step?: string; source?: string }>;
 }) {
   const { locale } = await params;
-  const { step } = await searchParams;
+  const { step, source } = await searchParams;
   setRequestLocale(locale);
   await ensureQuickPayTopupProduct();
   const products = await getTopups(locale);
@@ -35,5 +35,5 @@ async function Content({
     products.find((product) => product.id === QUICK_PAY_TOPUP_PRODUCT_ID)?.id ??
     products[0]?.id ??
     QUICK_PAY_TOPUP_PRODUCT_ID;
-  return <QuickPayAmount locale={locale} productId={productId} initialStep={step === "pay" ? "pay" : undefined} />;
+  return <QuickPayAmount locale={locale} productId={productId} initialStep={step === "pay" ? "pay" : undefined} source={source === "bill" ? "bill" : undefined} />;
 }

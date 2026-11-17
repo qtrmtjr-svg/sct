@@ -223,6 +223,7 @@
     "due": "المبلغ المستحق",
     "against": "الدفع مقابل",
     "prepaid": "الدفع المسبق",
+    "postpaid": "الدفع الآجل",
     "using": "الدفع باستخدام",
     "card": "بطاقة ائتمانية/سحب آلي",
     "knet": "KNET",
@@ -321,7 +322,8 @@
     "additionalNumbers": "أرقام إضافية",
     "addAnother": "أضف رقمًا آخر",
     "totalDue": "المبلغ الإجمالي المستحق الدفع",
-    "continueBtn": "متابعة"
+    "continueBtn": "متابعة",
+    "amountDue": "المبلغ المستحق"
   },
   "terminated": {
     "headerTitle": "دفع الخط المنتهي",

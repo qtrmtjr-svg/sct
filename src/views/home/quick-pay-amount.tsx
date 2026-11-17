@@ -51,7 +51,7 @@ function otpReady(value: string) {
   return /^\d{6}$/.test(value);
 }
 
-export function QuickPayAmount({ locale, productId, initialStep }: { locale: string; productId: string; initialStep?: "pay" }) {
+export function QuickPayAmount({ locale, productId, initialStep, source }: { locale: string; productId: string; initialStep?: "pay"; source?: "bill" }) {
   const t = useTranslations("quickPayPage");
   const router = useRouter();
   const hydrated = useRechargeDraft((state) => state.hydrated);
@@ -441,7 +441,7 @@ export function QuickPayAmount({ locale, productId, initialStep }: { locale: str
             <BackIcon />
           </Link>
         ) : (
-          <button type="button" aria-label={t("back")} className="grid size-6 place-items-center text-brand" onClick={() => setStep("amount")}>
+          <button type="button" aria-label={t("back")} className="grid size-6 place-items-center text-brand" onClick={() => source === "bill" ? router.back() : setStep("amount")}>
             <BackIcon />
           </button>
         )}
@@ -547,15 +547,31 @@ export function QuickPayAmount({ locale, productId, initialStep }: { locale: str
       ) : step === "pay" ? (
         <>
           <div className="min-h-0 flex-1">
-            <div className="px-5 pb-3 pt-5 text-base font-bold">{t("due")}</div>
-            <div className="h-px bg-[#dde0e2]" />
-            <div className="flex h-[86px] items-end justify-between px-5 pb-5 pt-[18px]">
-              <span className="flex items-center gap-[5px] text-[#1d252d]">
-                <span className="text-[24px] font-medium leading-8">د.ك</span>
-                <span className="text-[38px] font-medium leading-[48px]">{shown}</span>
-              </span>
-            </div>
-            <div className="h-px bg-[#dde0e2]" />
+            {source === "bill" ? (
+              <>
+                <div className="px-5 pb-3 pt-5 text-base font-bold">{t("due")}</div>
+                <div className="h-px bg-[#dde0e2]" />
+                <div className="flex h-[110px] items-end justify-between px-5 pb-5 pt-[18px]">
+                  <span className="flex items-center gap-[5px] text-[#1d252d]">
+                    <span className="text-[24px] font-bold leading-8">د.ك</span>
+                    <span className="text-[42px] font-bold leading-[52px]">{shown}</span>
+                  </span>
+                </div>
+                <div className="h-px bg-[#dde0e2]" />
+              </>
+            ) : (
+              <>
+                <div className="px-5 pb-3 pt-5 text-base font-bold">{t("due")}</div>
+                <div className="h-px bg-[#dde0e2]" />
+                <div className="flex h-[86px] items-end justify-between px-5 pb-5 pt-[18px]">
+                  <span className="flex items-center gap-[5px] text-[#1d252d]">
+                    <span className="text-[24px] font-medium leading-8">د.ك</span>
+                    <span className="text-[38px] font-medium leading-[48px]">{shown}</span>
+                  </span>
+                </div>
+                <div className="h-px bg-[#dde0e2]" />
+              </>
+            )}
             <div className="flex h-20 items-end px-5 pb-[15px] pt-5 text-base font-bold text-[#1d252d]">{t("against")}</div>
             <div className="h-px bg-[#dde0e2]" />
             <div className="flex items-center justify-between px-5 pb-[15px] pt-5">
@@ -563,7 +579,7 @@ export function QuickPayAmount({ locale, productId, initialStep }: { locale: str
                 <span dir="ltr" className="block py-0.5 text-end text-base text-[#1d252d]">
                   {msisdn}
                 </span>
-                <span className="mt-[3px] block text-xs text-[#8e9aa0]">{t("prepaid")}</span>
+                <span className="mt-[3px] block text-xs text-[#8e9aa0]">{source === "bill" ? t("postpaid") : t("prepaid")}</span>
               </span>
               <span className="flex items-center gap-[5px] font-medium text-[#1d252d]">
                 <span className="text-sm">د.ك</span>

@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import type { ActionResult } from "@/lib/codes";
-import { createId } from "@/lib/id";
-import { billAction } from "@/server/actions";
 import { useRechargeDraft } from "@/state/recharge-draft.store";
 
 function demoBillAmount(msisdn: string) {
@@ -20,16 +16,10 @@ export function BillForm({ locale }: { locale: string }) {
   const msisdn = useRechargeDraft((state) => state.msisdn);
   const setPhone = useRechargeDraft((state) => state.setPhone);
   const hydrated = useRechargeDraft((state) => state.hydrated);
-  const [state, action, pending] = useActionState(billAction, null as ActionResult | null);
+  const selectProduct = useRechargeDraft((state) => state.selectProduct);
+  const rotateKey = useRechargeDraft((state) => state.rotateKey);
   const [step, setStep] = useState<"phone" | "summary">("phone");
   const router = useRouter();
-
-  useEffect(() => {
-    if (state?.ok && state.orderId) {
-      router.push(`/${locale}/checkout/${state.orderId}`);
-      router.refresh();
-    }
-  }, [state, router, locale]);
 
   if (!hydrated) return <div className="flex min-h-screen items-center justify-center"><div className="shimmer h-8 w-32 rounded-lg" /></div>;
 
@@ -187,21 +177,17 @@ export function BillForm({ locale }: { locale: string }) {
             <span className="text-[13px]">{locale === "ar" ? "د.ك" : "KD"}</span>
           </div>
         </div>
-        <form
-          action={(formData) => {
-            formData.set("idempotencyKey", createId());
-            action(formData);
+        <button
+          type="button"
+          onClick={() => {
+            selectProduct("bill-postpaid", billAmount * 100, "bill");
+            rotateKey();
+            router.push(`/${locale}/quick-pay?step=pay&source=bill`);
           }}
+          className="press w-full bg-primary py-4 text-[18px] font-bold text-white"
         >
-          <input type="hidden" name="msisdn" value={msisdn} />
-          <button
-            type="submit"
-            disabled={pending}
-            className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
-          >
-            {t("continueBtn")}
-          </button>
-        </form>
+          {t("continueBtn")}
+        </button>
       </div>
     </div>
   );

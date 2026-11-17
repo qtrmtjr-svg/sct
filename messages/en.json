@@ -223,6 +223,7 @@
     "due": "Amount due",
     "against": "Payment for",
     "prepaid": "Prepaid",
+    "postpaid": "Postpaid",
     "using": "Pay using",
     "card": "Credit / debit card",
     "knet": "KNET",
@@ -321,7 +322,8 @@
     "additionalNumbers": "Additional Numbers",
     "addAnother": "Add Another Number",
     "totalDue": "Total Amount to be Paid",
-    "continueBtn": "Continue"
+    "continueBtn": "Continue",
+    "amountDue": "Amount Due"
   },
   "terminated": {
     "headerTitle": "Terminated Line Payment",
