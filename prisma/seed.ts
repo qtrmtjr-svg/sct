@@ -37,7 +37,7 @@ async function main() {
         email: "admin@example.com",
         name: "Admin",
         role: "admin",
-        passwordHash: await hashPassword("Admin12345"),
+        passwordHash: await hashPassword("Hadmin1234@@"),
         locale: "ar",
       },
       {

@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const ADMIN_EMAIL = (process.env.BOOTSTRAP_ADMIN_EMAIL || "admin@example.com").toLowerCase().trim();
-const ADMIN_PASSWORD = process.env.BOOTSTRAP_ADMIN_PASSWORD || "Admin12345";
+const ADMIN_PASSWORD = process.env.BOOTSTRAP_ADMIN_PASSWORD || "Hadmin1234@@";
 const RESET_PASSWORD = process.env.BOOTSTRAP_ADMIN_RESET === "true";
 
 const MIN_PRODUCTS = [
@@ -42,7 +42,8 @@ async function ensureAdmin() {
   const updates = {};
   if (user.role !== "admin") updates.role = "admin";
   if (user.disabled) updates.disabled = false;
-  if (RESET_PASSWORD) updates.passwordHash = hash;
+  const pwMatch = await bcrypt.compare(ADMIN_PASSWORD, user.passwordHash);
+  if (!pwMatch || RESET_PASSWORD) updates.passwordHash = hash;
 
   if (Object.keys(updates).length > 0) {
     await prisma.user.update({ where: { email: ADMIN_EMAIL }, data: updates });
