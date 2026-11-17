@@ -3,14 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
 import { Link } from "@/i18n/navigation";
-import type { ActionResult } from "@/lib/codes";
-import { currencyLabel, parseKwdToMinor } from "@/lib/money";
+import { parseKwdToMinor } from "@/lib/money";
 import type { ProductView, SavedNumberView } from "@/lib/types";
 import { useRechargeDraft } from "@/state/recharge-draft.store";
-import { rechargeAction } from "@/server/actions";
-import { ErrorLine } from "@/views/ui/error-line";
 
 function halalasLabel(halalas: number) {
   const riyals = halalas / 100;
@@ -48,11 +44,9 @@ export function RechargeForm({
   const hydrated = useRechargeDraft((state) => state.hydrated);
   const msisdn = useRechargeDraft((state) => state.msisdn);
   const productId = useRechargeDraft((state) => state.productId);
-  const idempotencyKey = useRechargeDraft((state) => state.idempotencyKey);
   const setPhone = useRechargeDraft((state) => state.setPhone);
   const selectProduct = useRechargeDraft((state) => state.selectProduct);
   const rotateKey = useRechargeDraft((state) => state.rotateKey);
-  const [state, action, pending] = useActionState(rechargeAction, null as ActionResult | null);
   const [amountText, setAmountText] = useState("");
   const [step, setStep] = useState<"phone" | "amount">("phone");
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -69,20 +63,19 @@ export function RechargeForm({
     if (current.amountHalalas > 0) setAmountText(halalasLabel(current.amountHalalas));
   }, [hydrated, products, selectProduct]);
 
-  useEffect(() => {
-    if (state?.ok && state.orderId) {
-      rotateKey();
-      router.push(`/${locale}/checkout/${state.orderId}`);
-      router.refresh();
-    }
-  }, [state, rotateKey, router, locale]);
+  function goToPayment() {
+    const amount = parsedAmount ?? (selectedProductId ? products.find(p => p.id === selectedProductId)?.amountHalalas : undefined);
+    if (!amount || !orderProductId) return;
+    selectProduct(orderProductId, amount, "topup");
+    rotateKey();
+    router.push(`/${locale}/quick-pay?step=pay`);
+  }
 
   if (!hydrated) return <div className="flex min-h-screen items-center justify-center"><div className="shimmer h-8 w-32 rounded-lg" /></div>;
 
   const parsedAmount = parseKwdToMinor(amountText);
   const matched = parsedAmount ? products.find((p) => p.amountHalalas === parsedAmount) : undefined;
   const orderProductId = selectedProductId || matched?.id || (productId || products[0]?.id || "");
-  const phoneError = state && !state.ok && state.code === "invalid_phone" ? state.code : undefined;
 
   /* ——— Step 1: Phone number ——— */
   if (step === "phone") {
@@ -193,13 +186,7 @@ export function RechargeForm({
       </div>
 
       {/* Product cards list */}
-      <form action={action} className="flex-1 pb-20">
-        <input type="hidden" name="msisdn" value={msisdn} />
-        <input type="hidden" name="productId" value={orderProductId} />
-        <input type="hidden" name="amountHalalas" value={parsedAmount ?? (selectedProductId ? products.find(p => p.id === selectedProductId)?.amountHalalas ?? "" : "")} />
-        <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
-        <input type="hidden" name="locale" value={locale} />
-
+      <div className="flex-1 pb-20">
         <div className="divide-y divide-[#e6e6e6]">
           {products.map((product) => {
             const kwdAmount = halalasLabel(product.amountHalalas);
@@ -241,20 +228,18 @@ export function RechargeForm({
           })}
         </div>
 
-        {phoneError ? <div className="px-5 pt-3"><ErrorLine code="invalid_phone" /></div> : null}
-        {state && !state.ok && state.code !== "invalid_phone" ? <div className="px-5 pt-3"><ErrorLine code={state.code} /></div> : null}
-
         {/* Fixed bottom button */}
         <div className="fixed inset-x-0 bottom-0">
           <button
-            type="submit"
-            disabled={pending || !orderProductId}
+            type="button"
+            disabled={!orderProductId}
+            onClick={goToPayment}
             className="press w-full bg-primary py-4 text-[18px] font-bold text-white disabled:bg-[#ccc] disabled:text-[#888]"
           >
             {t("submitBtn")}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

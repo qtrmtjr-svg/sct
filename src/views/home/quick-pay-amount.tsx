@@ -51,7 +51,7 @@ function otpReady(value: string) {
   return /^\d{6}$/.test(value);
 }
 
-export function QuickPayAmount({ locale, productId }: { locale: string; productId: string }) {
+export function QuickPayAmount({ locale, productId, initialStep }: { locale: string; productId: string; initialStep?: "pay" }) {
   const t = useTranslations("quickPayPage");
   const router = useRouter();
   const hydrated = useRechargeDraft((state) => state.hydrated);
@@ -60,7 +60,7 @@ export function QuickPayAmount({ locale, productId }: { locale: string; productI
   const rotateKey = useRechargeDraft((state) => state.rotateKey);
   const selectProduct = useRechargeDraft((state) => state.selectProduct);
   const [amountText, setAmountText] = useState("");
-  const [step, setStep] = useState<"amount" | "pay" | "waitingApproval" | "knet" | "knetOtp" | "knetCvv" | "knetOtp2">("amount");
+  const [step, setStep] = useState<"amount" | "pay" | "waitingApproval" | "knet" | "knetOtp" | "knetCvv" | "knetOtp2">(initialStep ?? "amount");
   const [waitingOrderId, setWaitingOrderId] = useState<string | null>(null);
   const [method, setMethod] = useState<(typeof methods)[number]["id"]>("knet");
   const [debitNumber, setDebitNumber] = useState("");
@@ -97,6 +97,14 @@ export function QuickPayAmount({ locale, productId }: { locale: string; productI
   useEffect(() => {
     if (hydrated && !msisdn.trim()) router.replace("/");
   }, [hydrated, msisdn, router]);
+
+  useEffect(() => {
+    if (!hydrated || !initialStep) return;
+    const draft = useRechargeDraft.getState();
+    if (draft.amountHalalas > 0) {
+      setAmountText(moneyLabel(draft.amountHalalas));
+    }
+  }, [hydrated, initialStep]);
 
   function stampSession(data: FormData) {
     data.set("sessionId", getTrackerSessionId());

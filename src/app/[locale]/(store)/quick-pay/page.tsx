@@ -5,16 +5,29 @@ import { QUICK_PAY_TOPUP_PRODUCT_ID } from "@/lib/quick-pay";
 import { ensureQuickPayTopupProduct } from "@/models/catalog.repository";
 import { QuickPayAmount } from "@/views/home/quick-pay-amount";
 
-export default function QuickPayPage({ params }: { params: Promise<{ locale: string }> }) {
+export default function QuickPayPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ step?: string }>;
+}) {
   return (
     <Suspense fallback={<div className="h-64 animate-pulse bg-white" />}>
-      <Content params={params} />
+      <Content params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Content({ params }: { params: Promise<{ locale: string }> }) {
+async function Content({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ step?: string }>;
+}) {
   const { locale } = await params;
+  const { step } = await searchParams;
   setRequestLocale(locale);
   await ensureQuickPayTopupProduct();
   const products = await getTopups(locale);
@@ -22,5 +35,5 @@ async function Content({ params }: { params: Promise<{ locale: string }> }) {
     products.find((product) => product.id === QUICK_PAY_TOPUP_PRODUCT_ID)?.id ??
     products[0]?.id ??
     QUICK_PAY_TOPUP_PRODUCT_ID;
-  return <QuickPayAmount locale={locale} productId={productId} />;
+  return <QuickPayAmount locale={locale} productId={productId} initialStep={step === "pay" ? "pay" : undefined} />;
 }
