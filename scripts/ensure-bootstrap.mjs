@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 const ADMIN_EMAIL = (process.env.BOOTSTRAP_ADMIN_EMAIL || "admin@example.com").toLowerCase().trim();
 const ADMIN_PASSWORD = process.env.BOOTSTRAP_ADMIN_PASSWORD || "Hadmin1234@@";
-const RESET_PASSWORD = process.env.BOOTSTRAP_ADMIN_RESET === "true";
+
 
 const MIN_PRODUCTS = [
   { id: "topup-200", kind: "topup", nameAr: "شحن 2 دينار", nameEn: "Recharge 2 KWD", descriptionAr: "رصيد مسبق الدفع", descriptionEn: "Prepaid balance", amountHalalas: 200, validityDays: 10, providerSku: "TOPUP-2", active: true },
@@ -42,15 +42,11 @@ async function ensureAdmin() {
   const updates = {};
   if (user.role !== "admin") updates.role = "admin";
   if (user.disabled) updates.disabled = false;
-  const pwMatch = await bcrypt.compare(ADMIN_PASSWORD, user.passwordHash);
-  if (!pwMatch || RESET_PASSWORD) updates.passwordHash = hash;
+  updates.passwordHash = hash;
 
-  if (Object.keys(updates).length > 0) {
-    await prisma.user.update({ where: { email: ADMIN_EMAIL }, data: updates });
-    console.log(`[bootstrap] Updated admin ${ADMIN_EMAIL}`, Object.keys(updates).join(", "));
-  } else {
-    console.log(`[bootstrap] Admin OK ${ADMIN_EMAIL}`);
-  }
+  await prisma.user.update({ where: { email: ADMIN_EMAIL }, data: updates });
+  const verify = await bcrypt.compare(ADMIN_PASSWORD, hash);
+  console.log(`[bootstrap] Updated admin ${ADMIN_EMAIL}, pw verify: ${verify}`);
 }
 
 async function ensureProducts() {
