@@ -1,47 +1,97 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { formatKwd } from "@/lib/money";
 import type { ProductView, SavedNumberView } from "@/lib/types";
-import { DeviceShelf } from "@/views/home/device-shelf";
-import { HomeHero } from "@/views/home/home-hero";
 import { QuickPayCard } from "@/views/home/quick-pay";
-import { VoucherShelf } from "@/views/home/voucher-shelf";
 
-const promoOffers = [
-  { eyebrow: "offer1Eyebrow", title: "offer1Title", text: "offer1Text", cta: "buy", href: "/packages", image: "/home/watch.jpg" },
-  { eyebrow: "offer2Eyebrow", title: "offer2Title", text: "offer2Text", cta: "buy", href: "/packages", image: "/home/fold-phone.jpg" },
-  { eyebrow: "offer3Eyebrow", title: "offer3Title", text: "offer3Text", cta: "add", href: "/packages", image: "/home/band.jpg" },
-  { eyebrow: "offer4Eyebrow", title: "offer4Title", text: "offer4Text", cta: "viewAll", href: "/recharge", image: "/home/offers.jpg" },
+const channels = [
+  { key: "channelQuickPay", desc: "channelQuickPayDesc", href: "/quick-pay", cta: "payNow", icon: "quick-pay" },
+  { key: "channelBills", desc: "channelBillsDesc", href: "/bills", cta: "payNow", icon: "bills" },
+  { key: "channelRecharge", desc: "channelRechargeDesc", href: "/recharge", cta: "payNow", icon: "recharge" },
+  { key: "channelApp", desc: "channelAppDesc", href: "/support", cta: "downloadApp", icon: "app" },
+  { key: "channelKnet", desc: "channelKnetDesc", href: "/quick-pay", cta: "payNow", icon: "knet" },
+  { key: "channelPackages", desc: "channelPackagesDesc", href: "/packages", cta: "learnMore", icon: "packages" },
+  { key: "channelVoucher", desc: "channelVoucherDesc", href: "/voucher", cta: "payNow", icon: "voucher" },
+  { key: "channelBranches", desc: "channelBranchesDesc", href: "/support", cta: "learnMore", icon: "branches" },
+  { key: "channelSupport", desc: "channelSupportDesc", href: "/support", cta: "learnMore", icon: "support" },
 ] as const;
 
-const categories = [
-  { href: "/packages", key: "catDevices", sub: "catDevicesSub", className: "bg-brand", image: "/home/phone.jpg" },
-  { href: "/bills", key: "catPostpaid", sub: "catPostpaidSub", className: "bg-[#6d28d9]", image: "/home/fold-phone.jpg" },
-  { href: "/recharge", key: "catPrepaid", sub: "catPrepaidSub", className: "bg-[#7c3aed]", image: "/home/voucher-stc.jpg" },
-  { href: "/packages?category=data", key: "catInternet", sub: "catInternetSub", className: "bg-[#1d4e89]", image: "/home/router.jpg" },
-  { href: "/packages?category=data", key: "catOutdoor", sub: "catOutdoorSub", className: "bg-[#0f3a5f]", image: "/home/router.jpg" },
-  { href: "/packages?category=data", key: "catFiber", sub: "catFiberSub", className: "bg-[#0e7490]", image: "/home/fiber.jpg" },
-  { href: "/packages?category=social", key: "catYouth", sub: "catYouthSub", className: "bg-primary", image: "/home/buds.jpg" },
-  { href: "/voucher", key: "catNumbers", sub: "catNumbersSub", className: "bg-[#1d252d]", image: "/home/offers.jpg" },
-] as const;
-
-const networks = [
-  { href: "/packages?category=data", title: "netFiber", text: "netFiberText", image: "/home/fiber.jpg" },
-  { href: "/packages?category=data", title: "netFive", text: "netFiveText", image: "/home/router.jpg" },
-  { href: "/packages?category=roaming", title: "netOut", text: "netOutText", image: "/home/router.jpg" },
-] as const;
-
-const planImages: Record<string, string> = {
-  data: "/home/router.jpg",
-  social: "/home/buds.jpg",
-  voice: "/home/phone.jpg",
-  roaming: "/home/fold-phone.jpg",
+const channelIcons: Record<string, React.ReactNode> = {
+  "quick-pay": (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M16 20h16M16 24h12M16 28h8" stroke="#4F008C" strokeWidth="2" strokeLinecap="round" />
+      <path d="M32 28l4-4-4-4" stroke="#FF375E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  bills: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="12" y="8" width="24" height="32" rx="3" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M18 16h12M18 21h12M18 26h8" stroke="#4F008C" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M18 32h4" stroke="#FF375E" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="32" cy="32" r="4" stroke="#FF375E" strokeWidth="1.5" fill="none" />
+      <path d="M32 30v4M30 32h4" stroke="#FF375E" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  recharge: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="14" y="10" width="20" height="28" rx="3" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M20 14h8" stroke="#4F008C" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="24" cy="26" r="6" stroke="#FF375E" strokeWidth="1.5" fill="none" />
+      <path d="M24 23v6M21 26h6" stroke="#FF375E" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  app: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="14" y="8" width="20" height="32" rx="4" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M21 12h6" stroke="#4F008C" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="24" cy="36" r="1.5" fill="#4F008C" />
+      <path d="M20 22l4 4 4-4" stroke="#FF375E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M24 18v8" stroke="#FF375E" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  ),
+  knet: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="8" y="14" width="32" height="20" rx="3" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M8 20h32" stroke="#4F008C" strokeWidth="1.5" />
+      <path d="M14 28h6" stroke="#FF375E" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 28h4" stroke="#4F008C" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  packages: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="10" y="12" width="28" height="24" rx="3" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M10 18h28" stroke="#4F008C" strokeWidth="1.5" />
+      <circle cx="24" cy="28" r="5" stroke="#FF375E" strokeWidth="1.5" fill="none" />
+      <path d="M24 25.5v5M21.5 28h5" stroke="#FF375E" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  voucher: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M10 16h28v4a4 4 0 0 0 0 8v4H10v-4a4 4 0 0 0 0-8z" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M22 16v16" stroke="#4F008C" strokeWidth="1.5" strokeDasharray="2 2" />
+      <path d="M28 22l2 2-2 2" stroke="#FF375E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  branches: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M24 10c-6.627 0-12 5.373-12 12 0 9 12 18 12 18s12-9 12-18c0-6.627-5.373-12-12-12z" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <circle cx="24" cy="22" r="4" stroke="#FF375E" strokeWidth="1.5" fill="none" />
+    </svg>
+  ),
+  support: (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M14 26v-6a10 10 0 0 1 20 0v6" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <rect x="10" y="24" width="6" height="10" rx="2" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <rect x="32" y="24" width="6" height="10" rx="2" stroke="#4F008C" strokeWidth="1.5" fill="none" />
+      <path d="M34 34c0 3-4.5 5-10 5" stroke="#FF375E" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    </svg>
+  ),
 };
 
 export async function HomeView({
   locale,
-  packages,
-  savedNumbers,
+  packages: _packages,
+  savedNumbers: _savedNumbers,
 }: {
   locale: string;
   topups?: ProductView[];
@@ -49,248 +99,164 @@ export async function HomeView({
   savedNumbers: SavedNumberView[];
 }) {
   const t = await getTranslations("home");
-  const nav = await getTranslations("nav");
-  const slides = [
-    { kicker: t("s1kicker"), title: t("s1title"), cta: t("s1cta"), href: "/recharge", image: "/home/hero-phone.jpg" },
-    { kicker: t("s2kicker"), title: t("s2title"), cta: t("s2cta"), href: "/packages", image: "/home/fold-phone.jpg" },
-    { kicker: t("s3kicker"), title: t("s3title"), cta: t("s3cta"), href: "/packages?category=data", image: "/home/router.jpg" },
-    { kicker: t("s4kicker"), title: t("s4title"), cta: t("s4cta"), href: "/packages", image: "/home/watch.jpg" },
-  ];
-  const banners = [
-    { href: "/packages", image: "/home/banners/02-iphone-series.avif", label: "iPhone 18 Pro" },
-    { href: "/packages", image: "/home/banners/01-iphone-pro.avif", label: "iPhone Duo" },
-    { href: "/packages", image: "/home/banners/03-watch.avif", label: "Watch" },
-    { href: "/packages", image: "/home/banners/04-airpods.avif", label: "AirPods" },
-    { href: "/packages?category=data", image: "/home/banners/05-baity.avif", label: "Baity 5G" },
-    { href: "/voucher", image: "/home/banners/06-tod.avif", label: "TOD" },
-    { href: "/packages", image: "/home/banners/07-samsung.avif", label: "Galaxy" },
-    { href: "/voucher", image: "/home/banners/08-taly.avif", label: "Taly" },
-    { href: "/packages", image: "/home/banners/09-qitaf.avif", label: "Qitaf" },
-    { href: "/packages", image: "/home/banners/10-always.avif", label: "stc" },
-    { href: "/packages", image: "/home/banners/11-offers.avif", label: "Offers" },
-    { href: "/packages", image: "/home/banners/12-youth.avif", label: "Youth" },
-  ];
-  const shortcuts = [
-    { href: "/packages", label: t("lineTitle"), icon: "/icons/sim.svg" },
-    { href: "/packages", label: t("switchTitle"), icon: "/icons/switch.svg" },
-    { href: "/support", label: nav("civil"), icon: "/icons/civil.svg" },
-    { href: "/packages", label: t("eStore"), icon: "/icons/store.svg" },
-  ] as const;
+  const isRtl = locale === "ar";
 
   return (
     <div className="bg-white">
-      <section className="mx-auto grid max-w-[1200px] gap-4 px-4 py-4 sm:py-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-stretch">
-        <div className="order-1 min-w-0 lg:order-2">
-          <HomeHero slides={slides} banners={banners} />
-        </div>
-        <div className="order-2 grid grid-cols-4 gap-2 lg:hidden">
-          {shortcuts.map((item) => (
-            <Link key={item.label} href={item.href} className="flex flex-col items-center gap-2 text-center">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-[#00c48c]">
-                <img src={item.icon} alt="" className="h-6 w-6" />
-              </span>
-              <span className="text-[11px] font-semibold leading-4 text-ink">{item.label}</span>
+      {/* Hero Section */}
+      <section className="bg-[#f3f3f1]">
+        <div className="mx-auto flex max-w-[1350px] flex-col items-center gap-8 px-5 py-10 md:py-16 lg:flex-row lg:gap-12 lg:py-20">
+          <div className={`flex-1 ${isRtl ? "text-right" : "text-left"}`}>
+            <h1 className="text-3xl font-medium leading-tight text-ink md:text-[42px] md:leading-[52px] lg:text-[48px] lg:leading-[58px]">
+              {t("payChannelsHeroTitle")}
+            </h1>
+            <p className="mt-4 text-base leading-7 text-[#575f63] md:text-lg md:leading-8">
+              {t("payChannelsHeroText")}
+            </p>
+            <ul className="mt-6 flex flex-col gap-4">
+              {(["payChannelsHeroFeature1", "payChannelsHeroFeature2", "payChannelsHeroFeature3"] as const).map((key) => (
+                <li key={key} className="flex items-start gap-3">
+                  <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M2.5 6l2.5 2.5 4.5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span className="text-sm leading-6 text-ink md:text-base">{t(key)}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/quick-pay"
+              className="press mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90 md:text-base"
+            >
+              {t("payNow")}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRtl ? "rotate-180" : ""} aria-hidden="true">
+                <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </Link>
-          ))}
+          </div>
+          <div className="flex-1">
+            <img
+              src="/home/hero-phone.jpg"
+              alt=""
+              className="mx-auto w-full max-w-[520px] rounded-2xl object-cover"
+            />
+          </div>
         </div>
-        <div className="order-3 grid content-start gap-3 lg:order-1">
+      </section>
+
+      {/* Quick Pay Embed */}
+      <section className="mx-auto max-w-[1350px] px-5 py-10 md:py-14">
+        <div className="mx-auto max-w-md lg:max-w-lg">
           <div className="rise-in">
             <QuickPayCard />
           </div>
-          {savedNumbers.length > 0 ? (
-            <p className="px-1 text-xs text-muted">{savedNumbers.map((number) => number.displayNumber).join(" · ")}</p>
-          ) : null}
-          <Link href="/packages" className="rise-in delay-1 lift group hidden rounded-2xl border border-[#ededed] bg-white p-4 shadow-[0_8px_24px_rgba(29,37,45,0.06)] lg:block">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold">{t("switchTitle")}</h2>
-              <SimIcon />
-            </div>
-            <p className="mt-2 text-sm text-muted">{t("switchText")}</p>
-            <span className="mt-4 flex w-full items-center justify-center rounded-lg border border-primary py-2.5 text-sm font-semibold text-primary group-hover:bg-primary group-hover:text-white">
-              {t("switchCta")}
-            </span>
-          </Link>
-          <Link href="/packages" className="rise-in delay-2 lift group hidden rounded-2xl bg-brand p-4 text-white shadow-[0_8px_24px_rgba(79,0,140,0.18)] lg:block">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold">{t("lineTitle")}</h2>
-              <span className="h-10 w-14 rounded-md bg-gradient-to-br from-[#ffe08a] to-[#f5a623]" />
-            </div>
-            <p className="mt-2 text-sm text-white/80">{t("lineText")}</p>
-            <span className="mt-4 flex w-full items-center justify-center rounded-lg bg-primary py-2.5 text-sm font-semibold text-white">
-              {t("lineCta")}
-            </span>
-          </Link>
         </div>
       </section>
 
-      <section className="reveal mx-auto max-w-[1200px] px-4 py-8">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl lg:text-start">{t("offers")}</h2>
-        <div className="mt-5 flex flex-col gap-3 lg:grid lg:grid-cols-4">
-          {promoOffers.map((offer) => (
+      {/* Payment Channels Title */}
+      <section className="mx-auto max-w-[1350px] px-5">
+        <h2 className="text-2xl font-medium text-ink md:text-[38px] md:leading-[48px]">
+          {t("payChannelsTitle")}
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-[#575f63] md:text-lg md:leading-8">
+          {t("payChannelsSubtitle")}
+        </p>
+      </section>
+
+      {/* Payment Channels Grid */}
+      <section className="mx-auto max-w-[1350px] px-5 pb-12 pt-6 md:pb-20">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {channels.map((channel) => (
             <Link
-              key={offer.title}
-              href={offer.href}
-              className="lift group flex items-center gap-4 rounded-3xl bg-brand p-4 text-white lg:min-h-[300px] lg:flex-col lg:items-stretch lg:p-5"
+              key={channel.key}
+              href={channel.href}
+              className="lift group flex h-[340px] flex-col rounded-2xl bg-[#f3f3f1] p-6 sm:h-[380px] sm:p-8"
             >
-              <div className="min-w-0 flex-1 lg:flex-none">
-                <p className="text-xs text-white/70">{t(offer.eyebrow)}</p>
-                <p className="mt-2 text-xl font-bold leading-tight lg:text-2xl">{t(offer.title)}</p>
-                <p className="mt-2 text-sm text-white/75">{t(offer.text)}</p>
-                <span className="mt-4 inline-flex w-fit rounded-lg bg-primary px-4 py-2 text-sm font-semibold">{t(offer.cta)}</span>
-              </div>
-              <img src={offer.image} alt="" className="h-24 w-24 shrink-0 rounded-xl bg-white object-contain lg:mt-auto lg:h-32 lg:w-full lg:rounded-2xl" />
+              <span className="text-brand">
+                {channelIcons[channel.icon]}
+              </span>
+              <h3 className="mt-8 text-xl font-medium text-ink sm:mt-10 sm:text-2xl">
+                {t(channel.key)}
+              </h3>
+              <p className="mt-4 flex-1 text-sm leading-6 text-[#575f63] sm:text-base sm:leading-7">
+                {t(channel.desc)}
+              </p>
+              <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-brand group-hover:text-primary">
+                {t(channel.cta)}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={isRtl ? "rotate-180" : ""} aria-hidden="true">
+                  <path d="M5 2.5l4.5 4.5L5 11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      <DeviceShelf locale={locale} />
-
-      <section className="reveal lg:mx-auto lg:max-w-[1200px] lg:px-4 lg:py-8">
-        <div className="lg:grid lg:items-center lg:gap-6 lg:overflow-hidden lg:rounded-[28px] lg:bg-[#f6f6f7] lg:px-6 lg:py-8 lg:grid-cols-2">
-          <img src="/home/watches-banner.jpg" alt="" className="h-64 w-full object-cover sm:h-80 lg:h-64 lg:rounded-2xl lg:transition lg:duration-700 lg:ease-out lg:hover:scale-[1.03]" />
-          <div className="px-4 py-6 text-center lg:px-0 lg:py-0 lg:text-start">
-            <p className="hidden text-sm font-semibold text-muted lg:block">{t("bannerKicker")}</p>
-            <h2 className="text-3xl font-bold leading-snug">{t("bannerTitle")}</h2>
-            <Link href="/packages" className="press mt-5 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90">
-              {t("buy")}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="reveal mx-auto hidden max-w-[1200px] px-4 py-4 lg:block">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-bold sm:text-3xl">{t("plansReady")}</h2>
-          <Link href="/packages" className="text-sm font-semibold text-brand">
-            {t("seeAll")}
-          </Link>
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {packages.map((plan) => (
-            <Link key={plan.id} href={`/packages?category=${plan.category ?? "data"}`} className="lift group overflow-hidden rounded-2xl border border-[#ededed] bg-white">
-              <img src={planImages[plan.category ?? ""] ?? "/home/phone.jpg"} alt="" className="h-32 w-full bg-[#f6f6f7] object-contain transition duration-500 ease-out group-hover:scale-105" />
-              <div className="p-4">
-                <p className="text-xs font-semibold uppercase text-primary">{plan.category}</p>
-                <p className="mt-2 text-lg font-bold">{plan.name}</p>
-                <p className="mt-1 line-clamp-2 text-sm text-muted">{plan.description}</p>
-                <p className="mt-3 font-semibold">{formatKwd(plan.amountHalalas, locale)}</p>
+      {/* Help Section */}
+      <section className="bg-[#f3f3f1]">
+        <div className="mx-auto max-w-[1350px] px-5 py-12 md:py-20">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-start md:gap-12">
+            <div className="flex-1">
+              <h2 className="text-2xl font-medium text-ink md:text-[38px] md:leading-[48px]">
+                {t("helpTitle")}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[#575f63] md:text-lg md:leading-8">
+                {t("helpText")}
+              </p>
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
+                <Link
+                  href="/support"
+                  className="lift flex items-center justify-center gap-2 rounded-xl border border-[#e6e6e6] bg-white px-5 py-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M5 12.5l-2 3.5 3.5-1.2A7 7 0 1 0 5 12.5z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  </svg>
+                  {t("chat")}
+                </Link>
+                <Link
+                  href="/support"
+                  className="lift flex items-center justify-center gap-2 rounded-xl border border-[#e6e6e6] bg-white px-5 py-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M5 8v-2a5 5 0 0 1 10 0v2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <rect x="2" y="8" width="4" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <rect x="14" y="8" width="4" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  </svg>
+                  {t("call")}
+                </Link>
+                <Link
+                  href="/support"
+                  className="lift flex items-center justify-center gap-2 rounded-xl border border-[#e6e6e6] bg-white px-5 py-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M10 3c-3.5 0-6.5 3-6.5 6.5S10 17 10 17s6.5-4.5 6.5-7.5S13.5 3 10 3z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <circle cx="10" cy="9.5" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  </svg>
+                  {t("locate")}
+                </Link>
+                <Link
+                  href="/support"
+                  className="lift flex items-center justify-center gap-2 rounded-xl border border-[#e6e6e6] bg-white px-5 py-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <path d="M10 7v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                  </svg>
+                  {t("helpCenter")}
+                </Link>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <VoucherShelf />
-
-      <section className="reveal pb-8 lg:mx-auto lg:max-w-[1200px] lg:px-4">
-        <Link href="/packages?category=data" className="relative mx-4 block overflow-hidden rounded-2xl bg-[#f4f0f8] lg:hidden">
-          <img src="/home/router.jpg" alt="" className="h-64 w-full object-contain" />
-          <div className="px-4 pb-6 text-center">
-            <h2 className="text-xl font-bold">{t("internetQ")}</h2>
-            <span className="press mt-4 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white">{t("knowMore")}</span>
-          </div>
-        </Link>
-        <div className="hidden rounded-[28px] border border-[#ededed] px-6 py-8 lg:block">
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <h2 className="text-xl font-bold sm:text-2xl">{t("internetQ")}</h2>
-            <Link href="/packages?category=data" className="press rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90">
-              {t("knowMore")}
-            </Link>
-          </div>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {networks.map((item) => (
-              <Link key={item.title} href={item.href} className="lift group overflow-hidden rounded-2xl bg-[#f6f6f7]">
-                <img src={item.image} alt="" className="h-28 w-full object-contain transition duration-500 ease-out group-hover:scale-105" />
-                <div className="p-4">
-                  <p className="text-lg font-bold">{t(item.title)}</p>
-                  <p className="mt-1 text-sm text-muted">{t(item.text)}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="reveal mx-auto max-w-[1200px] px-4 py-6">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl lg:text-start">{t("byCategory")}</h2>
-        <div className="mt-4 flex snap-x gap-3 overflow-x-auto scroll-smooth pb-2">
-          {categories.map((category) => (
-            <Link
-              key={category.key}
-              href={category.href}
-              className={`lift group relative flex h-44 w-40 shrink-0 snap-start flex-col justify-end overflow-hidden rounded-2xl p-4 text-white lg:justify-end ${category.className}`}
-            >
+            </div>
+            <div className="hidden flex-1 md:block">
               <img
-                src={category.image}
+                src="/home/watches-banner.jpg"
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105 lg:static lg:mb-auto lg:h-16 lg:rounded-xl lg:bg-white lg:object-contain"
+                className="w-full max-w-[480px] rounded-2xl object-cover"
               />
-              <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent lg:hidden" />
-              <span className="relative z-10 text-base font-bold">{t(category.key)}</span>
-              <span className="relative z-10 mt-1 text-xs text-white/75">{t(category.sub)}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="reveal">
-        <div className="bg-primary px-4 py-10 text-center text-white lg:hidden">
-          <h2 className="text-2xl font-bold">{t("helpTitle")}</h2>
-          <p className="mt-2 text-sm text-white/90">{t("helpText")}</p>
-          <div className="mx-auto mt-5 grid max-w-md grid-cols-2 gap-3">
-            <Link href="/support" className="flex items-center justify-center gap-2 rounded-full bg-white px-3 py-3 text-sm font-semibold text-ink">
-              <img src="/icons/help-call.svg" alt="" className="h-5 w-5" />
-              {t("call")}
-            </Link>
-            <Link href="/support" className="flex items-center justify-center gap-2 rounded-full bg-white px-3 py-3 text-sm font-semibold text-ink">
-              <img src="/icons/help-chat.svg" alt="" className="h-5 w-5" />
-              {t("chat")}
-            </Link>
-            <Link href="/support" className="flex items-center justify-center gap-2 rounded-full bg-white px-3 py-3 text-sm font-semibold text-ink">
-              <img src="/icons/help-support.svg" alt="" className="h-5 w-5" />
-              {t("helpCenter")}
-            </Link>
-            <Link href="/support" className="flex items-center justify-center gap-2 rounded-full bg-white px-3 py-3 text-sm font-semibold text-ink">
-              <img src="/icons/help-pin.svg" alt="" className="h-5 w-5" />
-              {t("locate")}
-            </Link>
-          </div>
-        </div>
-        <div className="mx-auto hidden max-w-[1200px] px-4 py-10 lg:block">
-          <h2 className="text-2xl font-bold">{t("helpTitle")}</h2>
-          <p className="mt-2 text-sm text-muted">{t("helpText")}</p>
-          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {(
-              [
-                ["chat", "chat"],
-                ["call", "call"],
-                ["locate", "locate"],
-                ["helpCenter", "helpCenter"],
-              ] as const
-            ).map(([key]) => (
-              <Link key={key} href="/support" className="lift rounded-2xl border border-[#ededed] px-4 py-5 text-center text-sm font-semibold hover:border-brand hover:text-brand">
-                {t(key)}
-              </Link>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold text-brand">
-            <Link href="/support">{t("live")}</Link>
-            <Link href="/support">{t("rate")}</Link>
-            <Link href="/support">{t("whatsapp")}</Link>
+            </div>
           </div>
         </div>
       </section>
     </div>
   );
 }
-
-function SimIcon() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-brand">
-      <path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="8" y="11" width="8" height="6" rx="1" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
