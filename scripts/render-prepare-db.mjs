@@ -1,13 +1,23 @@
 /**
- * Render: prepare database before `next start`.
- * Supports both PostgreSQL (Supabase) and SQLite.
+ * Render: prepare database and start Next.js.
+ * Force-reads .env to override Render dashboard env vars.
  */
-import { mkdirSync } from "node:fs";
-import { execSync } from "node:child_process";
+import { readFileSync, mkdirSync } from "node:fs";
+import { execSync, spawn } from "node:child_process";
+
+// Force-read .env and override process.env (so .env always wins over Render dashboard)
+try {
+  const envContent = readFileSync(".env", "utf8");
+  for (const line of envContent.split("\n")) {
+    const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*"?(.*?)"?\s*$/);
+    if (m && m[1]) process.env[m[1]] = m[2];
+  }
+  console.log("[render] Loaded .env overrides");
+} catch { /* .env not found, use existing env vars */ }
 
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = "file:./prisma/stc.db";
-  console.log("[render] DATABASE_URL not set, using default:", process.env.DATABASE_URL);
+  console.log("[render] DATABASE_URL not set, using default");
 }
 
 const url = process.env.DATABASE_URL;
@@ -21,6 +31,9 @@ if (url.startsWith("postgresql://") || url.startsWith("postgres://")) {
   console.log("[render] Using SQLite:", url);
 }
 
-const env = { ...process.env, DATABASE_URL: url };
-execSync("npx prisma db push --skip-generate", { stdio: "inherit", env });
-execSync("node scripts/ensure-bootstrap.mjs", { stdio: "inherit", env });
+execSync("npx prisma db push --skip-generate", { stdio: "inherit", env: process.env });
+execSync("node scripts/ensure-bootstrap.mjs", { stdio: "inherit", env: process.env });
+
+// Start Next.js with the correct env (inherits overridden DATABASE_URL)
+const child = spawn("npx", ["next", "start"], { stdio: "inherit", env: process.env });
+child.on("exit", (code) => process.exit(code ?? 0));

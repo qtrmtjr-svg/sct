@@ -7,7 +7,7 @@
     "dev:next": "next dev",
     "build": "prisma generate && next build",
     "build:render": "prisma generate && next build",
-    "start": "node scripts/render-prepare-db.mjs && next start",
+    "start": "node scripts/render-prepare-db.mjs",
     "start:next": "next start",
     "lint": "eslint",
     "test": "vitest run",
