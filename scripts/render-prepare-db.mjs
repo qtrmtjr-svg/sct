@@ -1,5 +1,6 @@
 /**
- * Render: prepare SQLite database before `next start`.
+ * Render: prepare database before `next start`.
+ * Supports both PostgreSQL (Supabase) and SQLite.
  */
 import { mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
@@ -11,7 +12,9 @@ if (!process.env.DATABASE_URL) {
 
 const url = process.env.DATABASE_URL;
 
-if (url.startsWith("file:/var/data") || url.includes("/var/data/")) {
+if (url.startsWith("postgresql://") || url.startsWith("postgres://")) {
+  console.log("[render] Using PostgreSQL (Supabase)");
+} else if (url.startsWith("file:/var/data") || url.includes("/var/data/")) {
   mkdirSync("/var/data", { recursive: true });
   console.log("[render] Using persistent SQLite:", url);
 } else {
