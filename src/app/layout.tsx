@@ -32,6 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <link rel="stylesheet" href="/scrollbar.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" />
       </head>
       <body className="flex min-h-full flex-col bg-surface font-sans text-ink antialiased" suppressHydrationWarning>
         {children}

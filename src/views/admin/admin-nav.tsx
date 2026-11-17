@@ -2,22 +2,14 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
 import { adminLogoutAction } from "@/server/admin-actions";
-
-const links = [
-  { href: "/admin/approvals", key: "approvals" },
-  { href: "/admin/live", key: "visitors" },
-  { href: "/admin/orders", key: "knetOrders" },
-  { href: "/admin/users", key: "admins" },
-] as const;
+import { useAdminRealtime } from "@/hooks/use-admin-realtime";
 
 export function AdminNav({ admin, locale }: { admin: { name: string; email: string }; locale: string }) {
-  const t = useTranslations("admin");
-  const pathname = usePathname();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { sessions } = useAdminRealtime();
+  const onlineCount = sessions.filter((s) => s.online).length;
 
   const logout = () =>
     startTransition(async () => {
@@ -27,42 +19,81 @@ export function AdminNav({ admin, locale }: { admin: { name: string; email: stri
     });
 
   return (
-    <header className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-      <div className="flex min-w-0 flex-wrap items-center gap-3">
-        <div className="rounded-xl bg-brand px-3 py-2 text-white">
-          <p className="text-[10px] uppercase tracking-wide text-white/70">{t("title")}</p>
-          <p className="truncate text-sm font-bold leading-tight">{admin.name || "Admin"}</p>
-        </div>
-        <p className="hidden truncate text-xs text-muted sm:block" dir="ltr">
-          {admin.email}
-        </p>
-      </div>
-      <nav className="flex flex-wrap items-center gap-2">
-        {links.map((link) => {
-          const active =
-            link.href === "/admin/approvals"
-              ? pathname === "/admin/approvals" || pathname === "/admin"
-              : pathname === link.href || pathname.startsWith(`${link.href}/`);
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`rounded-xl px-3 py-2 text-sm font-semibold ${active ? "bg-brand text-white" : "bg-surface text-ink"}`}
-            >
-              {t(link.key)}
-            </Link>
-          );
-        })}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 12,
+        marginBottom: 24,
+      }}
+    >
+      <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D252D", margin: 0 }}>الطلبات</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <button
-          id="admin-logout"
+          type="button"
+          onClick={() => router.push(`/${locale}/admin/live`)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 16px",
+            borderRadius: 14,
+            border: "1.5px solid #d0d5dd",
+            background: "#fff",
+            cursor: "pointer",
+            fontFamily: "'Tajawal', sans-serif",
+            fontSize: 15,
+            fontWeight: 600,
+            color: "#1D252D",
+          }}
+        >
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              background: onlineCount > 0 ? "#1e9e5a" : "#9ca3af",
+              animation: onlineCount > 0 ? "pulse-dot 1.5s infinite" : "none",
+              flexShrink: 0,
+            }}
+          />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14 0" />
+            <path d="M1.5 9a16 16 0 0 1 21 0" />
+            <path d="M8.5 16.1a6 6 0 0 1 7 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" />
+          </svg>
+          <span style={{ fontSize: 18, fontWeight: 800 }}>{onlineCount}</span>
+        </button>
+        <button
           type="button"
           onClick={logout}
           disabled={pending}
-          className="rounded-xl bg-surface px-3 py-2 text-sm font-semibold text-danger disabled:opacity-60"
+          style={{
+            padding: "10px 20px",
+            borderRadius: 14,
+            border: "none",
+            background: "transparent",
+            color: "#e4312a",
+            fontSize: 16,
+            fontWeight: 700,
+            fontFamily: "'Tajawal', sans-serif",
+            cursor: "pointer",
+            opacity: pending ? 0.6 : 1,
+          }}
         >
-          {t("logout")}
+          خروج
         </button>
-      </nav>
-    </header>
+      </div>
+
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.3); }
+        }
+      `}</style>
+    </div>
   );
 }

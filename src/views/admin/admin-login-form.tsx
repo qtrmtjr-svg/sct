@@ -1,18 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import type { ActionResult } from "@/lib/codes";
 import { adminLoginAction } from "@/server/admin-actions";
-import { Button } from "@/views/ui/button";
-import { ErrorLine } from "@/views/ui/error-line";
-import { Input } from "@/views/ui/input";
 
 export function AdminLoginForm({ locale }: { locale: string }) {
-  const t = useTranslations("adminLogin");
   const [state, formAction, pending] = useActionState(adminLoginAction, null as ActionResult | null);
-  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,55 +17,98 @@ export function AdminLoginForm({ locale }: { locale: string }) {
   }, [state, router, locale]);
 
   return (
-    <div className="mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-border bg-white shadow-xl">
-      <div className="bg-gradient-to-br from-primary to-primary/70 px-6 py-8 text-white">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <rect x="4" y="11" width="16" height="10" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="mt-1 text-sm text-white/80">{t("subtitle")}</p>
-      </div>
+    <div
+      className="flex min-h-dvh w-full items-center justify-center px-4"
+      style={{ fontFamily: "'Tajawal', sans-serif", background: "#f4f6f9" }}
+    >
+      <div
+        className="w-full"
+        style={{
+          maxWidth: 420,
+          background: "#fff",
+          borderRadius: 24,
+          padding: "48px 32px",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+        }}
+      >
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D252D", marginBottom: 6, textAlign: "center" }}>
+          لوحة التحكم
+        </h1>
+        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", marginBottom: 28 }}>
+          أدخل كلمة المرور للدخول
+        </p>
 
-      <form action={formAction} className="grid gap-4 px-6 py-6" autoComplete="on">
-        <Input
-          id="admin-email"
-          label={t("email")}
-          name="email"
-          type="email"
-          dir="ltr"
-          autoComplete="username"
-          required
-          autoFocus
-        />
-        <div className="relative">
-          <Input
-            id="admin-password"
-            label={t("password")}
-            name="password"
-            type={showPassword ? "text" : "password"}
-            dir="ltr"
-            autoComplete="current-password"
-            required
-            className="w-full pe-16"
-          />
-          <button
-            type="button"
-            id="admin-toggle-password"
-            onClick={() => setShowPassword((v) => !v)}
-            className="absolute bottom-0 end-0 flex h-11 items-center px-3 text-xs font-semibold text-primary"
+        {state && !state.ok ? (
+          <div
+            style={{
+              background: "#fef2f2",
+              color: "#dc2626",
+              borderRadius: 12,
+              padding: "12px 16px",
+              fontSize: 14,
+              fontWeight: 500,
+              marginBottom: 16,
+              textAlign: "center",
+            }}
           >
-            {showPassword ? t("hide") : t("show")}
+            كلمة المرور غير صحيحة
+          </div>
+        ) : null}
+
+        <form action={formAction}>
+          <div
+            style={{
+              height: 56,
+              borderRadius: 12,
+              border: "1.5px solid #d0d5dd",
+              display: "flex",
+              alignItems: "center",
+              paddingInline: 16,
+              marginBottom: 20,
+              transition: "border-color 0.2s",
+            }}
+          >
+            <input
+              type="password"
+              name="password"
+              placeholder="كلمة المرور"
+              autoComplete="current-password"
+              required
+              autoFocus
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+                outline: "none",
+                background: "transparent",
+                fontFamily: "'Tajawal', sans-serif",
+                fontSize: 16,
+                color: "#1D252D",
+              }}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={pending}
+            style={{
+              width: "100%",
+              height: 56,
+              borderRadius: 999,
+              border: "none",
+              background: "#e4312a",
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: 700,
+              fontFamily: "'Tajawal', sans-serif",
+              cursor: pending ? "wait" : "pointer",
+              opacity: pending ? 0.7 : 1,
+              transition: "opacity 0.2s",
+            }}
+          >
+            {pending ? "جاري الدخول..." : "دخول"}
           </button>
-        </div>
-        {state && !state.ok ? <ErrorLine code={state.code} /> : null}
-        <Button id="admin-login-submit" type="submit" pending={pending} className="h-11">
-          {pending ? t("signingIn") : t("submit")}
-        </Button>
-        <p className="text-center text-xs text-muted">{t("notice")}</p>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

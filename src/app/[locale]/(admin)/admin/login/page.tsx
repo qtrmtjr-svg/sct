@@ -22,11 +22,6 @@ export default function AdminLoginPage({ params }: { params: Promise<{ locale: s
 async function Content({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  // Already signed in to the dashboard → go straight in.
   if (await getAdminSession()) redirect(`/${locale}/admin/approvals`);
-  return (
-    <div className="flex min-h-[70vh] items-center px-4 py-10">
-      <AdminLoginForm locale={locale} />
-    </div>
-  );
+  return <AdminLoginForm locale={locale} />;
 }

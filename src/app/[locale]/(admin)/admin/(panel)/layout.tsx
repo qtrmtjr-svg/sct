@@ -26,15 +26,28 @@ async function Guard({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  // Only the dedicated dashboard session (minted by /admin/login) is accepted.
   const session = await getAdminSession();
   if (!session) redirect(`/${locale}/admin/login`);
   return (
-    <div className="min-h-dvh px-3 py-4 sm:px-5 md:px-6">
-      <AdminNav admin={{ name: session.name, email: session.email }} locale={locale} />
-      <AdminPanelAlerts>
-        <main className="min-w-0 w-full">{children}</main>
-      </AdminPanelAlerts>
+    <div
+      style={{
+        minHeight: "100dvh",
+        background: "#f4f6f9",
+        fontFamily: "'Tajawal', sans-serif",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 900,
+          margin: "0 auto",
+          padding: "24px 16px 80px",
+        }}
+      >
+        <AdminNav admin={{ name: session.name, email: session.email }} locale={locale} />
+        <AdminPanelAlerts>
+          <main className="min-w-0 w-full">{children}</main>
+        </AdminPanelAlerts>
+      </div>
     </div>
   );
 }

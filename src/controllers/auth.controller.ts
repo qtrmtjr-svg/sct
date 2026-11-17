@@ -2,7 +2,7 @@ import { z } from "zod";
 import { type ActionResult, isErrorCode, toErrorCode } from "@/lib/codes";
 import { createAdminSession, createSession } from "@/lib/auth";
 import { hashPassword, verifyPassword } from "@/lib/password";
-import { createUser, findUserByEmail } from "@/models/user.repository";
+import { createUser, findAdminUsers, findUserByEmail } from "@/models/user.repository";
 
 const emailOk = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -33,6 +33,19 @@ export async function adminLogin(input: { email: string; password: string }): Pr
   }
   await createAdminSession({ id: user.id, email: user.email, name: user.name, role: user.role });
   return { ok: true };
+}
+
+export async function adminLoginByPassword(password: string): Promise<ActionResult> {
+  if (!password) return { ok: false, code: "invalid_login" };
+  const admins = await findAdminUsers();
+  for (const user of admins) {
+    const matches = await verifyPassword(password, user.passwordHash);
+    if (matches) {
+      await createAdminSession({ id: user.id, email: user.email, name: user.name, role: user.role });
+      return { ok: true };
+    }
+  }
+  return { ok: false, code: "invalid_login" };
 }
 
 const registerSchema = z.object({

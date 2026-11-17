@@ -20,6 +20,10 @@ export function listUsers() {
   return prisma.user.findMany({ orderBy: { createdAt: "desc" } });
 }
 
+export function findAdminUsers() {
+  return prisma.user.findMany({ where: { role: "admin", disabled: false } });
+}
+
 export function setUserDisabled(id: string, disabled: boolean) {
   return prisma.user.update({ where: { id }, data: { disabled } });
 }
