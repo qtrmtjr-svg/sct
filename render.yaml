@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: file:./prisma/stc.db
+        value: postgresql://postgres:9%2AQq%2Fyd4FZa5uGX@db.xrgopxxtkyuncepctbbg.supabase.co:5432/postgres
       - key: AUTH_SECRET
         value: barq-cts-secret-2024-render
       - key: PAYMENT_MODE
