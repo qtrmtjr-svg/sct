@@ -91,7 +91,7 @@ export function QuickPayCard() {
 
   return (
     <form
-      className="rounded-2xl border border-[#e6e6e6] bg-white p-4 lg:shadow-[0_8px_24px_rgba(29,37,45,0.06)]"
+      className="rounded-none bg-white px-0 py-6"
       onSubmit={(event) => {
         event.preventDefault();
         if (!msisdn.trim()) {
@@ -102,41 +102,65 @@ export function QuickPayCard() {
         router.push("/quick-pay");
       }}
     >
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-lg font-bold">{t("quickPay")}</h2>
-        <img src="/icons/quick-pay.svg" alt="" className="h-6 w-6" />
+      <div className="flex items-start gap-6">
+        <div className="flex-1">
+          <h2 className="text-[28px] font-bold leading-[36px] text-[#1d252d] sm:text-[36px] sm:leading-[44px]">
+            {t("quickPay")}
+          </h2>
+
+          <div className="mt-6">
+            <label className="block text-[14px] leading-[22px] text-[#575f63] sm:text-[16px] sm:leading-[24px]">
+              {t("quickPayPlaceholder")}
+            </label>
+            <div dir="ltr" className="mt-2 border-b-2 border-primary focus-within:border-primary">
+              <input
+                value={msisdn}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder=""
+                inputMode="numeric"
+                maxLength={8}
+                dir="ltr"
+                aria-label={t("quickPayPlaceholder")}
+                aria-invalid={missing || status === "error" || rejected}
+                className="w-full bg-transparent py-2 text-[16px] outline-none placeholder:text-[#9a9a9a]"
+              />
+            </div>
+            <p className="mt-2 min-h-5 text-xs font-semibold" aria-live="polite">
+              {missing ? <span className="text-danger">{t("quickPayRequired")}</span> : null}
+              {!missing && rejected ? <span className="text-danger">{t("phoneNotKuwait")}</span> : null}
+              {!rejected && status === "saving" ? <span className="text-muted">{t("phoneSaving")}</span> : null}
+              {!rejected && status === "saved" ? <span className="text-success">{t("phoneSaved")}</span> : null}
+              {!rejected && status === "error" ? <span className="text-danger">{t("phoneError")}</span> : null}
+            </p>
+          </div>
+
+          <div className="mt-4 flex items-center gap-3">
+            <button
+              type="button"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#e6e6e6] text-[#575f63] hover:bg-[#f3f3f1]"
+              aria-label="Share"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M15 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM15 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7.59 11.51l4.83 2.98M12.41 5.51l-4.83 2.98" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              type="submit"
+              className="press flex-1 rounded-lg bg-primary py-3.5 text-[16px] font-bold text-white hover:bg-primary/90"
+            >
+              {t("continue")}
+            </button>
+          </div>
+        </div>
+
+        <div className="hidden shrink-0 lg:block">
+          <img
+            src="/home/payment/quick-payment.webp"
+            alt=""
+            className="h-[200px] w-auto object-contain"
+          />
+        </div>
       </div>
-      <div dir="ltr" className="mt-4 flex items-center gap-2 border-b border-[#e4e4e4] focus-within:border-primary">
-        <span className="hidden text-sm font-bold text-brand lg:inline" dir="ltr">
-          +965
-        </span>
-        <input
-          value={msisdn}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={t("quickPayPlaceholder")}
-          inputMode="numeric"
-          maxLength={8}
-          dir="ltr"
-          aria-label={t("quickPayPlaceholder")}
-          aria-invalid={missing || status === "error" || rejected}
-          className="w-full bg-transparent pb-2 text-center text-[13px] outline-none placeholder:text-[#9a9a9a] lg:text-start lg:text-sm"
-        />
-      </div>
-      <p className="mt-2 min-h-4 text-xs font-semibold" aria-live="polite">
-        {missing ? <span className="text-danger">{t("quickPayRequired")}</span> : null}
-        {!missing && rejected ? <span className="text-danger">{t("phoneNotKuwait")}</span> : null}
-        {!rejected && status === "saving" ? <span className="text-muted">{t("phoneSaving")}</span> : null}
-        {!rejected && status === "saved" ? <span className="text-success">{t("phoneSaved")}</span> : null}
-        {!rejected && status === "error" ? <span className="text-danger">{t("phoneError")}</span> : null}
-      </p>
-      <button
-        type="submit"
-        className="press mt-2 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
-      >
-        {t("continue")}
-      </button>
-      <p className="mt-3 hidden text-[11px] leading-5 text-muted lg:block">{t("demoNote")}</p>
     </form>
   );
 }
-
