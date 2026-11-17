@@ -119,27 +119,14 @@ export function BillForm({ locale }: { locale: string }) {
         </h2>
       </div>
 
-      {/* Bill card */}
-      <div className="flex-1 bg-[#f3f3f1] px-5 pb-36">
-        <div className="rounded-xl bg-white px-5 py-5 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="text-right text-[15px] font-semibold text-[#1d252d]" dir="ltr">
-                {msisdn} | {t("postpaid")}
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-[14px] font-semibold text-primary">{t("changes")}</span>
-                <span className="text-[14px] text-[#575f63]">{t("specifiedAmount")}</span>
-              </div>
-              <div className="mt-3 flex items-center justify-between rounded-lg border border-[#e6e6e6] px-4 py-3">
-                <span className="text-[16px] font-bold text-[#1d252d]" dir="ltr">{billAmount} {locale === "ar" ? "د.ك" : "KWD"}</span>
-                <span className="text-[14px] text-[#575f63]">{t("totalAmount")}</span>
-              </div>
-            </div>
+      {/* Bill card — STC PaymentEntryListItem style */}
+      <div className="flex-1 bg-[#f3f3f1] pb-36">
+        <div className="flex items-stretch bg-[#f3f3f1]">
+          <div className="flex w-[60px] min-w-[60px] items-center justify-center">
             <button
               type="button"
               onClick={() => setStep("phone")}
-              className="ms-4 mt-6 shrink-0 text-brand"
+              className="text-[#8e9aa0]"
               aria-label="Delete"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -147,10 +134,29 @@ export function BillForm({ locale }: { locale: string }) {
               </svg>
             </button>
           </div>
+          <div className="flex min-h-[80px] flex-1 items-center justify-between rounded-sm bg-white px-[10px] shadow-[0_1px_5px_rgba(0,0,0,0.2)]">
+            <div className="flex-1">
+              <p className="text-[15px] font-normal text-[#1d252d]">{msisdn}</p>
+              <p className="mt-1 text-[13px] font-medium capitalize text-[#8e9aa0]">{t("postpaid")}</p>
+            </div>
+            <div className="flex w-[35%] max-w-[35%] flex-col items-end">
+              <div className="flex items-baseline" dir="ltr">
+                <span className="text-[19px] font-normal text-[#1d252d]">{billAmount}.000</span>
+                <span className="ms-[7px] text-[14px] font-medium text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
+              </div>
+              <button type="button" className="mt-1 text-[13px] font-semibold text-primary">
+                {t("changes")}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white px-5 pb-5 text-[14px] font-medium leading-[20px] text-[#8e9aa0]">
+          {t("specifiedAmount")}
         </div>
 
         {/* Additional numbers */}
-        <div className="mt-8">
+        <div className="mt-4 px-5">
           <h3 className="text-[16px] font-bold text-[#1d252d]">{t("additionalNumbers")}</h3>
           <div className="mt-3 border-t border-[#e6e6e6]">
             <button
@@ -167,11 +173,14 @@ export function BillForm({ locale }: { locale: string }) {
         </div>
       </div>
 
-      {/* Fixed bottom: total + continue button */}
+      {/* Fixed bottom: total amount bar (STC totalAmountWrapper) + continue */}
       <div className="fixed inset-x-0 bottom-0">
-        <div className="flex items-center justify-between border-t border-[#e6e6e6] bg-white px-5 py-3">
-          <span className="text-[18px] font-bold text-[#1d252d]" dir="ltr">{billAmount}.000 {locale === "ar" ? "د.ك" : "KWD"}</span>
-          <span className="text-[14px] text-[#575f63]">{t("totalDue")}</span>
+        <div className="flex h-[50px] items-center justify-between bg-[#f3f3f1] px-5 text-[16px]">
+          <div className="flex items-baseline font-medium text-[#000]" dir="ltr">
+            <span className="text-[24px] font-medium">{billAmount}.000</span>
+            <span className="ms-[7px] text-[14px]">{locale === "ar" ? "د.ك" : "KD"}</span>
+          </div>
+          <span className="text-[14px] text-[#8e9aa0]">{t("totalDue")}</span>
         </div>
         <form
           action={(formData) => {

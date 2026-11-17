@@ -159,8 +159,8 @@ export function RechargeForm({
         </svg>
       </div>
 
-      {/* Gray header area */}
-      <div className="bg-[#f3f3f1] px-6 py-8">
+      {/* Gray header area — STC EmbedQuickpay style */}
+      <div className="bg-[#f3f3f1] px-6 py-[45px]">
         <h2 className="text-center text-[26px] font-bold leading-[36px] text-[#1d252d]">
           {t("questionSubtitle")}
         </h2>
@@ -183,7 +183,7 @@ export function RechargeForm({
                 }
               }}
               dir="ltr"
-              className="w-full bg-transparent text-left text-[16px] text-[#1d252d] outline-none"
+              className="w-full bg-transparent text-left text-[19px] font-normal leading-[30px] text-[#1d252d] outline-none"
             />
             <span className="shrink-0 text-[16px] text-[#575f63]">
               {locale === "ar" ? "المبلغ د ك" : "Amount KWD"}
@@ -218,12 +218,12 @@ export function RechargeForm({
               >
                 <StcCard amount={kwdAmount} />
                 <div className="flex-1" />
-                <div className="text-right">
-                  <p className="text-[22px] font-bold text-[#1d252d]">
-                    {locale === "ar" ? "د.ك" : "KWD"}{" "}
-                    <span className="text-[24px]">{kwdAmount}</span>
-                  </p>
-                  <p className="mt-1 text-[13px] text-[#575f63]">
+                <div className="flex flex-col items-end text-right">
+                  <div className="flex items-baseline" dir="ltr">
+                    <span className="text-[19px] font-normal text-[#1d252d]">{kwdAmount}</span>
+                    <span className="ms-[7px] text-[14px] font-medium text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
+                  </div>
+                  <p className="mt-1 text-[13px] font-medium text-[#8e9aa0]">
                     {validityText(product.validityDays, locale)}
                   </p>
                 </div>

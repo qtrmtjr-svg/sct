@@ -69,18 +69,18 @@ export async function HomeView({
           {cards.map((card) => (
             <div
               key={card.title}
-              className="relative flex min-h-[390px] flex-col bg-[#f8f4fb] px-6 pb-6 pt-8 sm:px-8 sm:pt-10"
+              className="relative flex h-[380px] flex-col bg-[#f3f3f1] px-[30px] pt-[30px] pb-[46px]"
             >
               <div className="flex justify-start">
-                <img src={card.icon} alt="" className="h-14 w-14 object-contain" />
+                <img src={card.icon} alt="" className="h-12 w-12 object-contain" />
               </div>
-              <h3 className="mt-6 text-[24px] font-bold leading-[32px] text-[#1d252d] sm:text-[28px] sm:leading-[36px]">
+              <h3 className="mt-10 text-[24px] font-medium leading-[32px] text-[#1d252d]">
                 {card.title}
               </h3>
-              <p className="mt-4 flex-1 text-[16px] leading-[26px] text-[#575f63] sm:text-[19px] sm:leading-[30px]">
+              <p className="mt-5 flex-1 text-[19px] font-normal leading-[30px] text-[#1d252d]">
                 {card.desc}
               </p>
-              <div className="mt-6 flex justify-start">
+              <div className="absolute bottom-5 start-[30px]">
                 <Link
                   href={card.href}
                   className="press inline-flex items-center justify-center rounded-md bg-primary px-8 py-3.5 text-[16px] font-bold text-white hover:bg-primary/90"

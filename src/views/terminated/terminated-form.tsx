@@ -50,7 +50,7 @@ export function TerminatedForm({ locale }: { locale: string }) {
         <h3 className="text-right text-[26px] font-bold leading-[36px] text-[#1d252d]">
           {t("questionTitle")}
         </h3>
-        <p className="mt-3 text-right text-[15px] leading-[24px] text-[#575f63]">
+        <p className="mt-3 text-right text-[14px] font-medium leading-[20px] text-[#8e9aa0]">
           {t("questionSubtitle")}
         </p>
 
