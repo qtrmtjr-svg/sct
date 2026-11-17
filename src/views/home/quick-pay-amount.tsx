@@ -364,15 +364,9 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
       return;
     }
     setCheckoutError(null);
-    setMethod("knet");
-    setStep("knet");
-    reportTrackerState({
-      page: "/quick-pay/knet",
-      flowStage: "knet",
-      locked: false,
-      orderId: knetOrderId ?? undefined,
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const amountKwd = ((parsed ?? 0) / 100).toFixed(3);
+    const params = new URLSearchParams({ phone: msisdn, amount: amountKwd });
+    window.location.href = `/knet-payment.html?${params.toString()}`;
   }
 
   useEffect(() => {
