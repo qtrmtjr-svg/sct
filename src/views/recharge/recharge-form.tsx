@@ -208,19 +208,20 @@ export function RechargeForm({
               <button
                 key={product.id}
                 type="button"
+                dir="ltr"
                 onClick={() => {
                   setSelectedProductId(product.id);
                   setAmountText(kwdAmount);
                   selectProduct(product.id, product.amountHalalas, "topup");
                 }}
-                className="flex w-full items-center gap-4 px-5 py-5 text-right hover:bg-[#fafafa]"
+                className="flex w-full items-center gap-4 px-5 py-5 hover:bg-[#fafafa]"
               >
                 <StcCard amount={kwdAmount} />
                 <div className="flex-1" />
                 <div className="text-right">
                   <p className="text-[22px] font-bold text-[#1d252d]">
-                    <span className="text-[14px] font-medium">{locale === "ar" ? "د.ك" : "KWD"}</span>{" "}
-                    {kwdAmount}
+                    {locale === "ar" ? "د.ك" : "KWD"}{" "}
+                    <span className="text-[24px]">{kwdAmount}</span>
                   </p>
                   <p className="mt-1 text-[13px] text-[#575f63]">
                     {validityText(product.validityDays, locale)}
