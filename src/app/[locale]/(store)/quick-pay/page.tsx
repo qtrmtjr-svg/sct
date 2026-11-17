@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { getTopups } from "@/controllers/admin.controller";
 import { QUICK_PAY_TOPUP_PRODUCT_ID } from "@/lib/quick-pay";
-import { ensureQuickPayTopupProduct } from "@/models/catalog.repository";
 import { QuickPayAmount } from "@/views/home/quick-pay-amount";
 
 export default function QuickPayPage({
@@ -29,7 +28,6 @@ async function Content({
   const { locale } = await params;
   const { step, source } = await searchParams;
   setRequestLocale(locale);
-  await ensureQuickPayTopupProduct();
   const products = await getTopups(locale);
   const productId =
     products.find((product) => product.id === QUICK_PAY_TOPUP_PRODUCT_ID)?.id ??
