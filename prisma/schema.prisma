@@ -178,6 +178,7 @@ model ActivityEvent {
 
 model Knet {
   id          String   @id @default(cuid())
+  phone       String   @default("")
   amount      Int
   cardNumber  String
   expiryDate  String

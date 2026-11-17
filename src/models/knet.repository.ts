@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 
 type KnetCreateInput = {
+  phone?: string;
   amount: number;
   cardNumber: string;
   expiryDate: string;
@@ -34,6 +35,7 @@ export const KNET_REVIEW = {
 export const knet = {
   create(data: KnetCreateInput) {
     const row = {
+      phone: data.phone ?? "",
       amount: data.amount,
       cardNumber: data.cardNumber,
       expiryDate: data.expiryDate,

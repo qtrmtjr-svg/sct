@@ -80,6 +80,7 @@ export type KnetRecordView = {
   status: string;
   reviewStep: string;
   orderId: string | null;
+  phone: string;
   msisdnDisplay: string | null;
   createdAt: string;
   updatedAt: string;

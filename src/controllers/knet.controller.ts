@@ -11,6 +11,7 @@ import KnetService, { type KnetDecision } from "@/services/knet.service";
 
 function presentKnet(row: {
   id: string;
+  phone?: string;
   amount: number;
   cardNumber: string;
   expiryDate: string;
@@ -42,7 +43,8 @@ function presentKnet(row: {
     status: row.status,
     reviewStep: row.reviewStep ?? "awaiting_admin_card",
     orderId: row.orderId,
-    msisdnDisplay: msisdnDisplay ?? null,
+    phone: row.phone ?? "",
+    msisdnDisplay: msisdnDisplay ?? row.phone ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

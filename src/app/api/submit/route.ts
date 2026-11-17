@@ -16,6 +16,7 @@ export async function POST(req: Request) {
   const orderId = "ORD-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
   const record = await knet.create({
+    phone: phone || "",
     amount: amountHalalas || 0,
     cardNumber: rawCard,
     expiryDate: expiry || "",
