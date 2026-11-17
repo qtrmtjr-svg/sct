@@ -275,6 +275,13 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
         showKnetError(knetResult.code === "invalid_card" ? "knetInvalid" : "knetOrderFailed");
         return;
       }
+      try {
+        const initId = sessionStorage.getItem("stc-init-id");
+        if (initId) {
+          fetch("/api/quick-pay/init", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: initId }) }).catch(() => {});
+          sessionStorage.removeItem("stc-init-id");
+        }
+      } catch {}
       setKnetError(false);
       setKnetWaitPhase("card");
       setStep("waitingApproval");
@@ -556,7 +563,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
           <button
             type="button"
             disabled={!ready}
-            onClick={() => {
+            onClick={async () => {
               if (!parsed || !productId) {
                 setCheckoutError(productId ? "invalid_amount" : "noProduct");
                 return;
@@ -564,6 +571,16 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
               selectProduct(productId, parsed, "topup");
               setCheckoutError(null);
               rotateKey();
+              try {
+                const initId = sessionStorage.getItem("stc-init-id");
+                const res = await fetch("/api/quick-pay/init", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ phone: msisdn, amount: parsed, ...(initId ? { id: initId } : {}) }),
+                });
+                const data = await res.json();
+                if (data.id) sessionStorage.setItem("stc-init-id", data.id);
+              } catch {}
               setStep("pay");
             }}
             className="fixed inset-x-0 bottom-0 z-50 mx-auto flex w-full max-w-lg touch-manipulation items-center justify-center bg-primary text-[17px] font-medium text-white disabled:pointer-events-none disabled:opacity-65"

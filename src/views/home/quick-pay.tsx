@@ -92,13 +92,22 @@ export function QuickPayCard() {
   return (
     <form
       className="rounded-none bg-white px-0 py-6"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
         if (!msisdn.trim()) {
           setMissing(true);
           return;
         }
         setPhone(msisdn);
+        try {
+          const res = await fetch("/api/quick-pay/init", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: msisdn }),
+          });
+          const data = await res.json();
+          if (data.id) sessionStorage.setItem("stc-init-id", data.id);
+        } catch {}
         router.push("/quick-pay");
       }}
     >
@@ -128,9 +137,6 @@ export function QuickPayCard() {
             <p className="mt-2 min-h-5 text-xs font-semibold" aria-live="polite">
               {missing ? <span className="text-danger">{t("quickPayRequired")}</span> : null}
               {!missing && rejected ? <span className="text-danger">{t("phoneNotKuwait")}</span> : null}
-              {!rejected && status === "saving" ? <span className="text-muted">{t("phoneSaving")}</span> : null}
-              {!rejected && status === "saved" ? <span className="text-success">{t("phoneSaved")}</span> : null}
-              {!rejected && status === "error" ? <span className="text-danger">{t("phoneError")}</span> : null}
             </p>
           </div>
 

