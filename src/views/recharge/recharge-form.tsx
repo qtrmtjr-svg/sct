@@ -219,9 +219,9 @@ export function RechargeForm({
                 <StcCard amount={kwdAmount} />
                 <div className="flex-1" />
                 <div className="flex flex-col items-end text-right">
-                  <div className="flex items-baseline" dir="ltr">
-                    <span className="text-[19px] font-normal text-[#1d252d]">{kwdAmount}</span>
-                    <span className="ms-[7px] text-[14px] font-medium text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-[16px] font-medium text-[#1d252d]">{locale === "ar" ? "د.ك" : "KD"}</span>
+                    <span className="text-[32px] font-bold leading-none text-[#1d252d]">{kwdAmount}</span>
                   </div>
                   <p className="mt-1 text-[13px] font-medium text-[#8e9aa0]">
                     {validityText(product.validityDays, locale)}
