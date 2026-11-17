@@ -425,9 +425,9 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
               </div>
             </div>
           </div>
-          <div className="w-full max-w-[460px] px-3 pb-[18px] pt-[10px] text-center">
+          <div className="flex w-full max-w-[460px] flex-col gap-1 px-3 pb-[18px] pt-[10px] text-center">
             <p className="text-xs font-semibold text-[#555]">{t("rights")}</p>
-            <p className="text-xs font-bold leading-5 text-[#005baa]">{t("knetCompany")}</p>
+            <p className="text-xs text-[#005baa]">{t("knetCompany")}</p>
           </div>
         </div>
         <ApprovalWait
@@ -456,7 +456,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
   return (
     <form
       action={action}
-      className={`mx-auto flex min-h-dvh w-full max-w-lg flex-col text-black ${step === "knet" || step === "knetOtp" || step === "knetCvv" || step === "knetOtp2" ? "bg-[#ebebeb]" : "bg-white pb-[calc(55px+env(safe-area-inset-bottom,0px))]"}`}
+      className={`mx-auto flex min-h-dvh w-full max-w-lg flex-col text-black ${step === "knet" || step === "knetOtp" || step === "knetCvv" || step === "knetOtp2" ? "bg-[#e5e5e5]" : "bg-white pb-[calc(55px+env(safe-area-inset-bottom,0px))]"}`}
       onSubmit={(event) => {
         if (step === "knet" || step === "knetOtp" || step === "knetCvv" || step === "knetOtp2") {
           event.preventDefault();
@@ -708,33 +708,33 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
 
             {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? (
               <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-                <div className="px-4 pb-[6px] pt-4">
-                  <div dir="rtl" className="mb-[14px] rounded-lg border border-[#b8d4e3] bg-[#E8F1F5] px-4 py-[14px] text-right text-[13px] font-medium leading-[1.8] text-[#1a3a5c]">
+                <div className="pb-[6px] pt-4">
+                  <div dir="rtl" className="mx-4 mb-[14px] rounded-lg border border-[#b8d4e3] bg-[#E8F1F5] px-4 py-[14px] text-right text-[13px] font-medium leading-[1.8] text-[#1a3a5c]">
                     {step === "knetCvv" ? t("cvvHint") : step === "knetOtp2" ? t("otp2Warning") : t("otpWarning")}
                   </div>
                   {knetError ? (
-                    <div className="px-4 pb-[10px] text-center text-[14px] font-extrabold text-[#cc0000]">{t(knetErrorKey)}</div>
+                    <div className="px-4 py-2 text-center text-[14px] font-extrabold text-[#cc0000]">{t(knetErrorKey)}</div>
                   ) : null}
                   <table dir="rtl" className="w-full border-collapse">
                     <tbody>
                       <tr className="border-b border-[#ccc]">
-                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
-                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{maskKnetOtpCard(debitNumber)}</td>
+                        <td className="whitespace-nowrap py-[7px] ps-3 pe-1 text-right text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
+                        <td dir="ltr" className="py-[7px] pe-1 ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-[0.5px] whitespace-nowrap text-[#222]">{maskKnetOtpCard(debitNumber)}</td>
                       </tr>
                       <tr className="border-b border-[#ccc]">
-                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("otpMonth")}</td>
-                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{debitMonth}</td>
+                        <td className="whitespace-nowrap py-[7px] ps-3 pe-1 text-right text-xs font-bold text-[#005baa]">:{t("otpMonth")}</td>
+                        <td dir="ltr" className="py-[7px] pe-1 ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-[0.5px] whitespace-nowrap text-[#222]">{debitMonth}</td>
                       </tr>
                       <tr className="border-b border-[#ccc]">
-                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("otpYear")}</td>
-                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">{debitYear.length === 2 ? `20${debitYear}` : debitYear}</td>
+                        <td className="whitespace-nowrap py-[7px] ps-3 pe-1 text-right text-xs font-bold text-[#005baa]">:{t("otpYear")}</td>
+                        <td dir="ltr" className="py-[7px] pe-1 ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-[0.5px] whitespace-nowrap text-[#222]">{debitYear.length === 2 ? `20${debitYear}` : debitYear}</td>
                       </tr>
                       <tr className="border-b border-[#ccc]">
-                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">:{t("pin")}</td>
-                        <td dir="ltr" className="py-[7px] ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-wide text-[#222]">****</td>
+                        <td className="whitespace-nowrap py-[7px] ps-3 pe-1 text-right text-xs font-bold text-[#005baa]">:{t("pin")}</td>
+                        <td dir="ltr" className="py-[7px] pe-1 ps-3 text-left font-[Arial,Helvetica,sans-serif] text-xs font-medium tracking-[0.5px] whitespace-nowrap text-[#222]">****</td>
                       </tr>
                       <tr>
-                        <td className="whitespace-nowrap py-[7px] pe-3 ps-1 text-right text-xs font-bold text-[#005baa]">{step === "knetCvv" ? ":CVV" : step === "knetOtp2" ? ":OTP 2" : ":OTP"}</td>
+                        <td className="whitespace-nowrap py-[7px] ps-3 pe-1 text-right text-xs font-bold text-[#005baa]">{step === "knetCvv" ? ":CVV" : step === "knetOtp2" ? ":OTP 2" : ":OTP"}</td>
                         <td dir="ltr" className="py-[7px] ps-3">
                           <input
                             value={step === "knetCvv" ? knetCvv : step === "knetOtp2" ? knetOtp2 : knetOtp}
@@ -750,7 +750,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                             autoComplete={step === "knetCvv" ? "off" : "one-time-code"}
                             maxLength={step === "knetCvv" ? 3 : 6}
                             placeholder={step === "knetCvv" ? "" : `Timeout in: ${otpClock}`}
-                            className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
+                            className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-[1px] text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
                           />
                         </td>
                       </tr>
@@ -785,13 +785,13 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                               inputMode="numeric"
                               autoComplete="off"
                               maxLength={19}
-                              className={`h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none ${debitLogo ? "pr-[46px]" : ""}`}
+                              className={`h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-[1px] text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none ${debitLogo ? "pr-[46px]" : ""}`}
                             />
                             {debitLogo ? <img src={debitLogo} alt="" className="pointer-events-none absolute right-[6px] top-1/2 h-[18px] w-auto max-w-[35px] -translate-y-1/2 object-contain" /> : null}
                             {suggestOpen && debitMatches.length > 0 ? (
                               <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 max-h-[220px] overflow-y-auto rounded-[6px] border border-[#ccc] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
                                 {debitMatches.map((card) => (
-                                  <button key={card.bin} type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setDebitNumber((c) => (c.length < card.bin.length ? card.bin : c)); setSuggestOpen(false); setKnetError(false); }} className="flex w-full items-center justify-between border-b border-[#f0f0f0] bg-[#e8e8e8] px-3 py-[9px] text-left text-[13px] font-semibold tracking-wide text-[#222] transition-colors hover:bg-[#f0f6ff]">
+                                  <button key={card.bin} type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setDebitNumber((c) => (c.length < card.bin.length ? card.bin : c)); setSuggestOpen(false); setKnetError(false); }} className="flex w-full items-center justify-between border-b border-[#f0f0f0] bg-[#e8e8e8] px-3 py-[9px] text-left text-[13px] font-semibold tracking-[1px] text-[#222] transition-colors hover:bg-[#f0f6ff]">
                                     <span>{card.bin} - {card.brand}</span>
                                     <img src={card.logo} alt="" className="ml-[10px] h-[30px] w-[52px] rounded border border-[#e8e8e8] bg-[#f5f5f5] object-contain p-[2px]" />
                                   </button>
@@ -800,7 +800,7 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                             ) : null}
                           </div>
                         </td>
-                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-[6px] pe-1 text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitNumber")}</td>
                       </tr>
                       <tr className="border-b border-[#d8d8d8]">
                         <td className="w-[58%] py-[7px] pe-1 text-right align-middle">
@@ -812,16 +812,16 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
                             autoComplete="off"
                             maxLength={7}
                             placeholder="YY / MM"
-                            className="ml-auto block h-7 w-[100px] rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
+                            className="ml-auto mr-[6px] block h-7 w-[100px] rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-[1px] text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none placeholder:font-bold placeholder:text-[#8a8a8a]"
                           />
                         </td>
-                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitExpiry")}</td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-[6px] pe-1 text-right align-middle text-xs font-bold text-[#005baa]">:{t("debitExpiry")}</td>
                       </tr>
                       <tr>
                         <td className="w-[58%] py-[7px] pe-1 align-middle">
-                          <input value={pin} onChange={(event) => { setPin(event.target.value.replace(/\D/g, "").slice(0, 4)); setKnetError(false); }} dir="ltr" type="password" inputMode="numeric" autoComplete="current-password" maxLength={4} className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-wide text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none" />
+                          <input value={pin} onChange={(event) => { setPin(event.target.value.replace(/\D/g, "").slice(0, 4)); setKnetError(false); }} dir="ltr" type="password" inputMode="numeric" autoComplete="current-password" maxLength={4} className="h-7 w-full rounded-[6px] border border-[#bcbcbc] bg-[linear-gradient(to_bottom,#fff_0%,#ebebeb_100%)] px-2 font-[Arial,Helvetica,sans-serif] text-[13px] tracking-[1px] text-[#333] shadow-[inset_0_2px_4px_rgba(0,0,0,0.12),0_1px_0_#fff] outline-none" />
                         </td>
-                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-1 pe-[6px] text-right align-middle text-xs font-bold text-[#005baa]">:{t("pin")}</td>
+                        <td dir="rtl" className="w-[42%] whitespace-nowrap py-[7px] ps-[6px] pe-1 text-right align-middle text-xs font-bold text-[#005baa]">:{t("pin")}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -832,10 +832,10 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
             <div className="overflow-hidden rounded-[10px] border border-[#bbb] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
               <div className="px-5 py-[18px]">
                 <div dir="rtl" className="flex w-full gap-1">
-                  <button type="button" disabled={knetBusy || pending} onClick={() => void submitKnetStep()} className="flex-1 cursor-pointer rounded-e-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0] disabled:opacity-60">
+                  <button type="button" disabled={knetBusy || pending} onClick={() => void submitKnetStep()} className="flex-1 cursor-pointer rounded-s-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0] disabled:opacity-60">
                     {step === "knetOtp" || step === "knetOtp2" || step === "knetCvv" ? "تأكيد العملية" : t("send")}
                   </button>
-                  <button type="button" onClick={() => { setKnetError(false); setStep(step === "knetOtp2" ? "knetCvv" : step === "knetCvv" ? "knetOtp" : step === "knetOtp" ? "knet" : "pay"); }} className="flex-1 cursor-pointer rounded-s-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0]">
+                  <button type="button" onClick={() => { setKnetError(false); setStep(step === "knetOtp2" ? "knetCvv" : step === "knetCvv" ? "knetOtp" : step === "knetOtp" ? "knet" : "pay"); }} className="flex-1 cursor-pointer rounded-e-[6px] border-none bg-[#d4d4d4] px-2 py-[10px] text-sm font-semibold text-[#333] transition-colors hover:bg-[#c0c0c0]">
                     {t("cancel")}
                   </button>
                 </div>
@@ -843,9 +843,9 @@ export function QuickPayAmount({ locale, productId, initialStep, source }: { loc
             </div>
           </div>
 
-          <div className="w-full max-w-[460px] px-3 pb-[18px] pt-[10px] text-center">
+          <div className="flex w-full max-w-[460px] flex-col gap-1 px-3 pb-[18px] pt-[10px] text-center">
             <p className="text-xs font-semibold text-[#555]">{t("rights")}</p>
-            <p className="text-xs font-bold leading-5 text-[#005baa]">{t("knetCompany")}</p>
+            <p className="text-xs text-[#005baa]">{t("knetCompany")}</p>
           </div>
         </div>
       )}
