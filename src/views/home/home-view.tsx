@@ -34,7 +34,7 @@ export async function HomeView({
       title: t("channelTerminatedTitle"),
       desc: t("channelTerminatedDesc"),
       cta: t("channelTerminatedCta"),
-      href: "/bills",
+      href: "/terminated",
       icon: "/icons/stc-terminate.svg",
     },
   ];

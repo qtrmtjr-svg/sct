@@ -31,13 +31,13 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages}>
       <ActivityTracker />
       <DraftHydrator />
-      <PathGate hide={["/quick-pay", "/admin"]}>
+      <PathGate hide={["/quick-pay", "/admin", "/bills", "/recharge"]}>
         <Suspense fallback={<div className="h-16 border-b border-border bg-white" />}>
           <HeaderSlot locale={locale} />
         </Suspense>
       </PathGate>
       <main className="flex-1">{children}</main>
-      <PathGate hide={["/quick-pay", "/admin"]}>
+      <PathGate hide={["/quick-pay", "/admin", "/bills", "/recharge"]}>
         <SiteFooter />
       </PathGate>
       <ToastViewport />

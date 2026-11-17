@@ -283,7 +283,12 @@
     "customAmountHint": "من 1 إلى 500 د.ك.",
     "phoneLocked": "الرقم مثبت من الدفع السريع ولا يمكن تعديله.",
     "submit": "متابعة الدفع",
-    "saved": "أرقام محفوظة"
+    "saved": "أرقام محفوظة",
+    "headerTitle": "إعادة التعبئة",
+    "questionTitle": "لمن تدفع؟",
+    "questionSubtitle": "الرجاء إدخال رقم",
+    "numberLabel": "رقم الجوال",
+    "submitBtn": "متابعة"
   },
   "packages": {
     "title": "الباقات",
@@ -302,7 +307,23 @@
     "title": "سداد فاتورة",
     "subtitle": "استعلام مفوتر. في هذه التجربة، الأرقام التي تنتهي بـ 1111 عليها 150 د.ك.",
     "phone": "رقم الجوال",
-    "submit": "متابعة الدفع"
+    "submit": "متابعة الدفع",
+    "headerTitle": "ادفع فاتورتك",
+    "questionTitle": "لمن تقوم بالدفع؟",
+    "questionSubtitle": "الرجاء إدخال رقم",
+    "numberLabel": "الرقم",
+    "submitBtn": "موافق"
+  },
+  "terminated": {
+    "headerTitle": "دفع الخط المنتهي",
+    "bannerTitle": "دفع الخط المنتهي",
+    "questionTitle": "يرجى تعبئة البيانات المطلوبة لعرض قيمة المبلغ المستحق",
+    "questionSubtitle": "يرجى استخدام نفس المعرف الذي تم التحقق منه مسبقًا من قبل stc.",
+    "civilId": "البطاقة المدنية",
+    "contractNum": "رقم العقد",
+    "civilIdInput": "رقم البطاقة المدنية",
+    "contractInput": "رقم العقد",
+    "submitBtn": "متابعة"
   },
   "voucher": {
     "title": "استخدام قسيمة",

@@ -283,7 +283,12 @@
     "customAmountHint": "From 1 to 500 KWD",
     "phoneLocked": "This number is locked from quick pay and cannot be edited.",
     "submit": "Continue to payment",
-    "saved": "Saved numbers"
+    "saved": "Saved numbers",
+    "headerTitle": "Recharge",
+    "questionTitle": "Who are you paying for?",
+    "questionSubtitle": "Please enter a number",
+    "numberLabel": "Phone number",
+    "submitBtn": "Continue"
   },
   "packages": {
     "title": "Packages",
@@ -302,7 +307,23 @@
     "title": "Pay a bill",
     "subtitle": "Postpaid inquiry. In this demo, numbers ending in 1111 have 150 KWD due.",
     "phone": "Mobile number",
-    "submit": "Continue to payment"
+    "submit": "Continue to payment",
+    "headerTitle": "Pay your bill",
+    "questionTitle": "Who are you paying for?",
+    "questionSubtitle": "Please enter a number",
+    "numberLabel": "Number",
+    "submitBtn": "OK"
+  },
+  "terminated": {
+    "headerTitle": "Terminated line payment",
+    "bannerTitle": "Terminated line payment",
+    "questionTitle": "Please fill in the required data to view the amount due",
+    "questionSubtitle": "Please use the same ID previously verified by stc.",
+    "civilId": "Civil ID",
+    "contractNum": "Contract number",
+    "civilIdInput": "Civil ID number",
+    "contractInput": "Contract number",
+    "submitBtn": "Continue"
   },
   "voucher": {
     "title": "Redeem a voucher",
