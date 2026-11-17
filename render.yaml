@@ -9,7 +9,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://postgres:9%2AQq%2Fyd4FZa5uGX@db.xrgopxxtkyuncepctbbg.supabase.co:5432/postgres
+        value: postgresql://postgres.xrgopxxtkyuncepctbbg:9%2AQq%2Fyd4FZa5uGX@aws-0-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+      - key: DIRECT_URL
+        value: postgresql://postgres.xrgopxxtkyuncepctbbg:9%2AQq%2Fyd4FZa5uGX@aws-0-us-east-2.pooler.supabase.com:5432/postgres
       - key: AUTH_SECRET
         value: barq-cts-secret-2024-render
       - key: PAYMENT_MODE

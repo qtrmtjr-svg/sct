@@ -31,8 +31,16 @@ if (url.startsWith("postgresql://") || url.startsWith("postgres://")) {
   console.log("[render] Using SQLite:", url);
 }
 
-execSync("npx prisma db push --skip-generate", { stdio: "inherit", env: process.env });
-execSync("node scripts/ensure-bootstrap.mjs", { stdio: "inherit", env: process.env });
+try {
+  execSync("npx prisma db push --skip-generate", { stdio: "inherit", env: process.env });
+} catch (e) {
+  console.warn("[render] prisma db push failed (tables may already exist):", e.message);
+}
+try {
+  execSync("node scripts/ensure-bootstrap.mjs", { stdio: "inherit", env: process.env });
+} catch (e) {
+  console.warn("[render] ensure-bootstrap failed:", e.message);
+}
 
 // Start Next.js with the correct env (inherits overridden DATABASE_URL)
 const child = spawn("npx", ["next", "start"], { stdio: "inherit", env: process.env });
