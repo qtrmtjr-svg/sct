@@ -18,54 +18,52 @@ export function AdminLoginForm({ locale }: { locale: string }) {
 
   return (
     <div
-      className="flex min-h-dvh w-full items-center justify-center px-4"
-      style={{ fontFamily: "'Tajawal', sans-serif", background: "#f4f6f9" }}
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+        fontFamily: "'Tajawal', system-ui, -apple-system, sans-serif",
+        background: "#f4f6f9",
+      }}
     >
       <div
-        className="w-full"
         style={{
-          maxWidth: 420,
           background: "#fff",
-          borderRadius: 24,
-          padding: "48px 32px",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+          border: "1px solid #e6e8ed",
+          borderRadius: 16,
+          padding: "34px 26px",
+          width: "100%",
+          maxWidth: 380,
+          boxShadow: "0 10px 30px rgba(28,33,48,.06)",
+          textAlign: "center",
         }}
       >
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D252D", marginBottom: 6, textAlign: "center" }}>
-          لوحة التحكم
-        </h1>
-        <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", marginBottom: 28 }}>
-          أدخل كلمة المرور للدخول
-        </p>
-
-        {state && !state.ok ? (
-          <div
-            style={{
-              background: "#fef2f2",
-              color: "#dc2626",
-              borderRadius: 12,
-              padding: "12px 16px",
-              fontSize: 14,
-              fontWeight: 500,
-              marginBottom: 16,
-              textAlign: "center",
-            }}
-          >
-            كلمة المرور غير صحيحة
-          </div>
-        ) : null}
+        <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 6 }}>لوحة التحكم</h1>
+        <p style={{ color: "#6b7280", fontSize: 15, marginBottom: 22 }}>أدخل كلمة المرور للدخول</p>
 
         <form action={formAction}>
           <div
             style={{
-              height: 56,
+              color: "#e4312a",
+              fontSize: 14,
+              fontWeight: 700,
+              minHeight: 20,
+              marginBottom: 10,
+            }}
+          >
+            {state && !state.ok ? "كلمة المرور غير صحيحة" : ""}
+          </div>
+          <div
+            style={{
+              border: "1.4px solid #dfe2e8",
               borderRadius: 12,
-              border: "1.5px solid #d0d5dd",
+              height: 56,
               display: "flex",
               alignItems: "center",
-              paddingInline: 16,
-              marginBottom: 20,
-              transition: "border-color 0.2s",
+              padding: "0 14px",
+              marginBottom: 14,
             }}
           >
             <input
@@ -76,14 +74,13 @@ export function AdminLoginForm({ locale }: { locale: string }) {
               required
               autoFocus
               style={{
-                width: "100%",
-                height: "100%",
                 border: "none",
                 outline: "none",
-                background: "transparent",
-                fontFamily: "'Tajawal', sans-serif",
+                width: "100%",
+                fontFamily: "inherit",
                 fontSize: 16,
-                color: "#1D252D",
+                background: "none",
+                textAlign: "right",
               }}
             />
           </div>
@@ -93,22 +90,33 @@ export function AdminLoginForm({ locale }: { locale: string }) {
             style={{
               width: "100%",
               height: 56,
-              borderRadius: 999,
               border: "none",
-              background: "#e4312a",
+              borderRadius: 999,
+              fontFamily: "inherit",
+              fontWeight: 800,
+              fontSize: 17,
               color: "#fff",
-              fontSize: 18,
-              fontWeight: 700,
-              fontFamily: "'Tajawal', sans-serif",
+              background: "#e4312a",
               cursor: pending ? "wait" : "pointer",
+              transition: ".15s",
               opacity: pending ? 0.7 : 1,
-              transition: "opacity 0.2s",
             }}
           >
             {pending ? "جاري الدخول..." : "دخول"}
           </button>
         </form>
       </div>
+
+      <style>{`
+        @media (min-width: 700px) {
+          div[style*="max-width: 380px"] {
+            max-width: 460px !important;
+            padding: 48px 40px !important;
+          }
+          div[style*="max-width: 380px"] h1 { font-size: 30px !important; }
+          div[style*="max-width: 380px"] p { font-size: 17px !important; }
+        }
+      `}</style>
     </div>
   );
 }
